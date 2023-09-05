@@ -1,3 +1,7 @@
+/*!
+Fundamental language features not present in Rust. The functionality
+here is generally re-exported from third-party crates.
+*/
 #![feature(decl_macro)]
 
 pub use ::bytes as bytes;
