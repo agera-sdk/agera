@@ -2,15 +2,25 @@
 
 ## Futures
 
+- [ ] `futures::race`
+
 ## Regular expression
 
 - [ ] Literal
-- [ ] `define_static_regexp!()`
+- [ ] `define_regexp! { static REGEX = regex!("pattern"); }`
 
 ## URI encoding and decoding
 
+?
+
 ## Bytes
+
+?
 
 ## Serialization (ser)
 
+?
+
 ## Collection literals
+
+?
