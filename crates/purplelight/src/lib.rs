@@ -1,3 +1,4 @@
-pub use purplelight_core as core;
-pub use purplelight_lang as lang;
-pub use purplelight_lang::prelude as prelude;
+#![feature(decl_macro)]
+
+pub mod prelude;
+pub mod util;
