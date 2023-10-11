@@ -13,4 +13,4 @@ description = "Purplelight SDK API"
 bytes = { version = "1.4.0", features = ["serde"] }
 file_paths = "0.1.2"
 futures = "0.3.28"
-regex = "1.10.0"
+lazy-regex = "3.0.1"
