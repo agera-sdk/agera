@@ -18,9 +18,13 @@ Two-dimensional display featuring a main `Stage` type that includes:
 
 The entity-component-system pattern used by Purplelight applications.
 
+## purplelight::geom
+
+Provides basic geometry types, such as `Vector`. It is used instead of `nalgebra` for ease of use.
+
 ## purplelight::ui
 
 Skinnable UI control foundation over `purplelight::display2d`.
 
-- Set `renderedState = "outdated""` for a control when its skin updates. The skin updates when a parent or the control itself gets its theme assigned a new value or a control's ECS component is added, removed or updated.
-- Controls are rendered a certain frame if their rendered state is outdated.
+- Set `renderedState = "outdated""` for a control when its skin updates. The skin updates when a parent or the control itself gets its theme assigned a new value or when a control's ECS component has been updated (added, changed or removed, which the ECS module is already ready for handling).
+- Controls are rendered at a certain frame if their rendered state is outdated.
