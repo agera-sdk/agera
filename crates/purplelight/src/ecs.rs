@@ -10,7 +10,7 @@ the following adds an empty `Entity` to the application's root entity:
 
 ```
 use purplelight::ecs::common::*;
-let child = purplelight::application().root().spawn_child(());
+let child = purplelight::application::root().spawn_child(());
 ```
 */
 
@@ -37,8 +37,11 @@ pub mod common {
         component::{Component, ComponentId},
         entity::Entity,
         event::{Event, EventReader, EventWriter},
+        hierarchy::SpawnChildEntity,
         query::{Added, Changed, With, Without},
         system::Query,
         world::World,
     };
 }
+
+pub mod hierarchy;

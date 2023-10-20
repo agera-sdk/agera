@@ -5,7 +5,7 @@
 Some centralization for the application, including:
 
 - the ECS's root entity;
-- the user interface's root `EntityId`;
+- the user interface's root `Entity`;
 - `Input`
 
 ## purplelight::display
