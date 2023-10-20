@@ -37,7 +37,11 @@ pub mod common {
         component::{Component, ComponentId},
         entity::Entity,
         event::{Event, EventReader, EventWriter},
-        hierarchy::SpawnChildEntity,
+        hierarchy::{
+            Children as HierarchyChildren,
+            Parent as HierarchyParent,
+            SpawnChild as HierarchySpawnChild,
+        },
         query::{Added, Changed, With, Without},
         system::Query,
         world::World,

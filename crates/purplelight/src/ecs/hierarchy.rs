@@ -4,17 +4,46 @@ use crate::ecs::{
     world::EntityMut,
 };
 
-pub trait SpawnChildEntity {
+pub trait SpawnChild {
     fn spawn_child(&self, bundle: impl Bundle) -> EntityMut<'static>;
 }
 
-impl SpawnChildEntity for Entity {
+impl SpawnChild for Entity {
     fn spawn_child(&self, bundle: impl Bundle) -> EntityMut<'static> {
         let mut child = crate::application::world_mut().spawn(bundle);
-        child.insert(EntityParent(*self));
+        child.insert(ParentComponent(*self));
         child
     }
 }
 
+pub trait Parent {
+    fn parent(&self) -> Option<Entity>;
+}
+
+impl Parent for Entity {
+    fn parent(&self) -> Option<Entity> {
+        crate::application::world().get::<ParentComponent>(*self).map(|c| c.0)
+    }
+}
+
+pub trait Children {
+    fn children(&self) -> Vec<Entity>;
+}
+
+impl Children for Entity {
+    fn children(&self) -> Vec<Entity> {
+        let mut r: Vec<Entity> = vec![];
+        for ent in crate::application::world().iter_entities() {
+            let Some(c) = ent.get::<ParentComponent>() else {
+                break;
+            };
+            if c.0 == *self {
+                r.push(c.0);
+            }
+        }
+        r
+    }
+}
+
 #[derive(Component)]
-pub(crate) struct EntityParent(Entity);
+struct ParentComponent(Entity);
