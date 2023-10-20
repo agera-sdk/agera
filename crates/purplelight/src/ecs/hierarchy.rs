@@ -28,6 +28,13 @@ impl Parent for Entity {
 
 pub trait Children {
     fn children(&self) -> Vec<Entity>;
+
+    /// Despawns all children entities from an entity.
+    fn despawn_children(&self) {
+        for child in self.children() {
+            child.despawn();
+        }
+    }
 }
 
 impl Children for Entity {
@@ -38,7 +45,7 @@ impl Children for Entity {
                 break;
             };
             if c.0 == *self {
-                r.push(c.0);
+                r.push(ent.id());
             }
         }
         r

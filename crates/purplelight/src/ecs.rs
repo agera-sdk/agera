@@ -1,7 +1,7 @@
 /*!
 The entity-component-system pattern used by Purplelight applications.
 It re-exports functionality from the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11)
-and adds entity hierarchy.
+and adds entity hierarchy and operations to Entities.
 
 # Entity hierarchy
 
@@ -34,13 +34,32 @@ pub use ::bevy_ecs::{
 pub mod common {
     pub use super::{
         bundle::Bundle,
+        change_detection::{
+            Mut,
+            Ref,
+            MutUntyped,
+        },
         component::{Component, ComponentId},
         entity::Entity,
+        entity_operations::{
+            Contains as purplelight_ecs_Entity_Contains,
+            ContainsId as purplelight_ecs_Entity_ContainsId,
+            ContainsTypeId as purplelight_ecs_Entity_ContainsTypeId,
+            Despawn as purplelight_ecs_EntityDespawn,
+            Get as purplelight_ecs_EntityGet,
+            GetRef as purplelight_ecs_EntityGetRef,
+            GetById as purplelight_ecs_EntityGetById,
+            GetMutById as purplelight_ecs_EntityGetMutById,
+            GetMut as purplelight_ecs_EntityGetMut,
+            Location as purplelight_ecs_EntityLocation,
+            Insert as purplelight_ecs_EntityInsert,
+            Remove as purplelight_ecs_EntityRemove,
+        },
         event::{Event, EventReader, EventWriter},
         hierarchy::{
-            Children as HierarchyChildren,
-            Parent as HierarchyParent,
-            SpawnChild as HierarchySpawnChild,
+            Children as EntityHierarchyChildren,
+            Parent as EntityHierarchyParent,
+            SpawnChild as EntityHierarchySpawnChild,
         },
         query::{Added, Changed, With, Without},
         system::Query,
@@ -49,3 +68,4 @@ pub mod common {
 }
 
 pub mod hierarchy;
+pub mod entity_operations;
