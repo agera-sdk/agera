@@ -1,6 +1,7 @@
 /*!
 The entity-component-system pattern used by Purplelight
-applications. It is a re-export of the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11).
+applications. It re-exports items from the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11)
+and adds entity hierarchy.
 
 # Components
 
@@ -8,9 +9,10 @@ Components are normal Rust structs. They are data stored in a `World` and specif
 instances of Components correlate to Entities.
 
 ```
-use purplelight::ecs::prelude::*;
+use purplelight::ecs::common::*;
 
-
+#[derive(Component)]
+struct Position { x: f32, y: f32 }
 ```
 */
 
@@ -30,7 +32,8 @@ pub use ::bevy_ecs::{
     world,
 };
 
-pub mod prelude {
+/// Commonly used ECS items.
+pub mod common {
     pub use super::{
         bundle::Bundle,
         component::{Component, ComponentId},
