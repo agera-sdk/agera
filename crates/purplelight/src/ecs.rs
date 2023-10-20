@@ -67,5 +67,11 @@ pub mod common {
     };
 }
 
+/// Hierarchy traits for Entities.
 pub mod hierarchy;
+
+/// Operation traits for Entities.
 pub mod entity_operations;
+
+/// Path operation traits for Entities.
+pub mod path_operations;
