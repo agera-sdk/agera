@@ -61,17 +61,17 @@ pub mod common {
             Parent as EntityHierarchyParent,
             SpawnChild as EntityHierarchySpawnChild,
         },
+        path_operations::{
+            Name as purplelight_ecs_Entity_Name,
+            SetName as purplelight_ecs_Entity_SetName,
+            ResolvePath as purplelight_ecs_Entity_ResolvePath,
+        },
         query::{Added, Changed, With, Without},
         system::Query,
         world::World,
     };
 }
 
-/// Hierarchy traits for Entities.
 pub mod hierarchy;
-
-/// Operation traits for Entities.
 pub mod entity_operations;
-
-/// Path operation traits for Entities.
 pub mod path_operations;

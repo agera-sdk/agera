@@ -1,3 +1,5 @@
+//! Hierarchy traits for Entities.
+
 use crate::ecs::{
     bundle::Bundle,
     common::*,

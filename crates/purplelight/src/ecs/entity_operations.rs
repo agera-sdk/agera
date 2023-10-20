@@ -1,3 +1,5 @@
+//! Operation traits for Entities.
+
 use std::any::TypeId;
 use crate::ecs::common::*;
 use bevy_ecs::{ptr::Ptr, entity::EntityLocation};
