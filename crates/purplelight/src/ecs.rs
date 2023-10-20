@@ -1,18 +1,16 @@
 /*!
-The entity-component-system pattern used by Purplelight
-applications. It re-exports items from the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11)
+The entity-component-system pattern used by Purplelight applications.
+It re-exports functionality from the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11)
 and adds entity hierarchy.
 
-# Components
+# Entity hierarchy
 
-Components are normal Rust structs. They are data stored in a `World` and specific
-instances of Components correlate to Entities.
+Entities are created directly when adding a child entity to an existing entity. For example,
+the following adds an empty `Entity` to the application's root entity:
 
 ```
 use purplelight::ecs::common::*;
-
-#[derive(Component)]
-struct Position { x: f32, y: f32 }
+let child = purplelight::application().root().spawn_child(());
 ```
 */
 
