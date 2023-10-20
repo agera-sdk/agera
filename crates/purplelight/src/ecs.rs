@@ -3,6 +3,17 @@ The entity-component-system pattern used by Purplelight applications.
 It re-exports functionality from the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11)
 and adds entity hierarchy and operations to Entities.
 
+# Full documentation
+
+Refer to the [`bevy_ecs` crate](https://docs.rs/bevy_ecs/0.11) for full documentation on the entity-component-system
+pattern API.
+
+# Entity operations
+
+Importing `purplelight::ecs::common` into scope brings common Entity operations
+as methods, which are not normally methods in the `bevy_ecs` crate. For example, importing this module
+brings `.get::<Component>()` into scope.
+
 # Entity hierarchy
 
 Entities are created directly when adding a child entity to an existing entity. For example,
