@@ -1,5 +1,11 @@
 # Agera SDK
 
+<p align="center">
+
+<img src="./assets/logo.svg" width="500">
+
+</p>
+
 Develop rich internet applications robustly through Agera SDK.
 
 The Agera SDK is being built in the Rust language. However, unlike other Rust frameworks, it does not require knowledge of the Rust ecosystem: the framework bundles all necessary dependencies into the application.
