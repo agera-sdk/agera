@@ -8,6 +8,10 @@ operating system, Agera internally uses the following:
 
 - Tokio runtime
 
+The following items are available when building for native platforms:
+
+- `agera::target::tokio` — Alias to the `tokio` crate.
+
 # Browser
 
 When building an Agera application for the browser, the following dependencies
@@ -22,6 +26,7 @@ The following items are available when building for the browser:
 
 - `agera::target::js_bindings` — Alias to the `wasm_bindgen` crate.
 - `agera::target::js_futures` — Alias to the `wasm_bindgen_futures` crate.
+- `agera::target::js` — Alias to the `js_sys` crate.
 */
 
 /// Expands an item solely if the build target is a native platform.
@@ -29,7 +34,7 @@ pub macro if_native_target {
     ($($it:item)+) => {
         $(
             #[cfg(not(target_arch = "wasm32"))]
-            $($meta)* $($vis)? $it
+            $it
         )+
     },
 }
@@ -44,9 +49,13 @@ pub macro if_browser_target {
     },
 }
 
+if_native_target! {
+    pub use tokio;
+}
+
 if_browser_target! {
-    pub(crate) use wasm_bindgen as js_bindings;
-    pub(crate) use wasm_bindgen_futures as js_futures;
-    pub(crate) use js_sys as js;
+    pub use wasm_bindgen as js_bindings;
+    pub use wasm_bindgen_futures as js_futures;
+    pub use js_sys as js;
     pub(crate) use web_sys as web;
 }
