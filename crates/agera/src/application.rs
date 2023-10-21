@@ -23,3 +23,6 @@ pub fn world() -> &'static Lazy<World> {
 pub fn world_mut() -> &'static mut Lazy<World> {
     unsafe { &mut WORLD }
 }
+
+mod bootstrap;
+pub use bootstrap::*;

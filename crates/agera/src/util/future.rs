@@ -6,6 +6,7 @@ where
     F: Future<Output = ()> + 'static,
 {
     if_native_target! {{
+        crate::application::assert_bootstrapped!();
         tokio::task::spawn_local(future);
     }}
     if_browser_target! {{
