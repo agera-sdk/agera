@@ -2,7 +2,7 @@
 Work with URIs.
 */
 
-use crate::util::*;
+use crate::common::*;
 
 /// Escapes certain URI characters. Escapes all characters except:
 /// ```text

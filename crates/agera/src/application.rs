@@ -1,5 +1,5 @@
 use crate::ecs::common::*;
-use crate::util::*;
+use crate::common::*;
 
 static mut ROOT: Entity = Entity::PLACEHOLDER;
 
