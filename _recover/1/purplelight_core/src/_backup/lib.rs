@@ -1,11 +1,11 @@
 /*!
-The core functionality of the Purplelight platform.
+The core functionality of the Agera platform.
 */
 
 pub mod app;
 
 /// The Entity-Component-System pattern which
-/// Purplelight uses as the main way of running
+/// Agera uses as the main way of running
 /// applications, graphics and simulations.
 ///
 /// # Overview

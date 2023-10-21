@@ -13,7 +13,7 @@ use futures::Future;
 /// # Example
 /// 
 /// ```
-/// use purplelight::futures;
+/// use agera::futures;
 /// # async fn f() {
 /// let (value, index, remaining) = futures::race(list_of_futures).await;
 /// # }

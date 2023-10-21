@@ -1,11 +1,11 @@
 [package]
-name = "purplelight"
+name = "agera"
 version = "0.1.0"
 edition = "2021"
 authors = ["hydroper <matheusdiasdesouzads@gmail.com>"]
-repository = "https://github.com/purplelight-tech/purplelight"
+repository = "https://github.com/agera-tech/agera"
 license = "MIT OR Apache-2.0"
-description = "Purplelight SDK API"
+description = "Agera SDK API"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

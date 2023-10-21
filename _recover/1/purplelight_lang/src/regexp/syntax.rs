@@ -58,7 +58,7 @@ This example shows how an alternation works, and what it means to
 prefer a branch in the alternation over subsequent branches.
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 
 let haystack = "samwise";
 // If 'samwise' comes first in our alternation, then it is
@@ -109,12 +109,12 @@ However, such matches are permitted when using a [bytes Regexp][super::bytes::By
 For example:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"");
 let ranges: Vec<_> = re.find_iter("💩").map(|m| m.range()).collect();
 assert_eq!(ranges, vec![0..0, 4..4]);
 
-use purplelight_lang::regexp::bytes::*;
+use agera_lang::regexp::bytes::*;
 let re = BytesRegexp::new(r"").unwrap();
 let ranges: Vec<_> = re.find_iter("💩".as_bytes()).map(|m| m.range()).collect();
 assert_eq!(ranges, vec![0..0, 1..1, 2..2, 3..3, 4..4]);
@@ -168,7 +168,7 @@ Flags can be toggled within a pattern. Here’s an example that matches
 case-insensitively for the first part but case-sensitively for the second part:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"(?i)a+(?-i)b+");
 let m = re.find("AaAaAbbBBBb").unwrap();
 assert_eq!(m.as_str(), "AaAaAbb");
@@ -180,7 +180,7 @@ Multi-line mode means `^` and `$` no longer match just at the
 beginning/end of the input, but also at the beginning/end of lines:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"(?m)^line \d+");
 let m = re.find("line one\nline 2\n").unwrap();
 assert_eq!(m.as_str(), "line 2");
@@ -189,7 +189,7 @@ assert_eq!(m.as_str(), "line 2");
 Note that `^` matches after new lines, even at the end of input:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"(?m)^");
 let m = re.find_iter("test\n").last().unwrap();
 assert_eq!((m.start(), m.end()), (5, 5));
@@ -199,7 +199,7 @@ When both CRLF mode and multi-line mode are enabled, then `^` and `$`
 will match either `\r` and `\n`, but never in the middle of a `\r\n`:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"(?mR)^foo$");
 let m = re.find("\r\nfoo\r\n").unwrap();
 assert_eq!(m.as_str(), "foo");
@@ -211,7 +211,7 @@ One good example of this is using an ASCII word boundary instead of a
 Unicode word boundary, which might make some regex searches run faster:
 
 ```
-# use purplelight_lang::regexp::regexp;
+# use agera_lang::regexp::regexp;
 let re = regexp!(r"(?-u:\b).+(?-u:\b)");
 let m = re.find("$$abc$$").unwrap();
 assert_eq!(m.as_str(), "abc");

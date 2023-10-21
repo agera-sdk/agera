@@ -16,21 +16,21 @@ There are two ways of constructing a regular expression object:
 
 - Using a `regexp!` literal, which consists of a pattern and optional flags, as follows:
 ```
-# use purplelight_lang::regexp::*;
+# use agera_lang::regexp::*;
 let my_regexp = regexp!(r"pattern");
 let my_regexp = regexp!(r"pattern");
 ```
   `regexp!` literals compile the regular expression only once.
 - Or calling the `Regexp::new` constructor:
 ```
-# use purplelight_lang::regexp::*;
+# use agera_lang::regexp::*;
 let my_regexp = Regexp::new(r"pattern").unwrap();
 ```
 
 Flags, such as `i`, can be passed as suffix when using the `regexp!` literal:
 
 ```
-# use purplelight_lang::regexp::*;
+# use agera_lang::regexp::*;
 let _ = regexp!(r"pattern"i);
 ```
 
@@ -41,7 +41,7 @@ In that case you can use the `lazy_regexp!` literal and annotate it with
 `LazyRegexp` to define a global regular expression:
 
 ```
-# use purplelight_lang::regexp::*;
+# use agera_lang::regexp::*;
 static GLOBAL_REGEX: LazyRegexp = lazy_regexp!(r"pattern");
 ```
 
@@ -50,7 +50,7 @@ static GLOBAL_REGEX: LazyRegexp = lazy_regexp!(r"pattern");
 Most commonly, macros such as `regexp_replace_all!` can be used to replace occurrences:
 
 ```
-# use purplelight_lang::regexp::*;
+# use agera_lang::regexp::*;
 let text = "Foo fuu";
 let text = regexp_replace_all!(
     r#"\bf(?P<suffix>\w+)"#i,

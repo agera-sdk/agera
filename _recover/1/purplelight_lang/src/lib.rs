@@ -21,7 +21,7 @@ pub mod future {
     /// # Example
     /// 
     /// ```
-    /// # use purplelight::lang::future::future_race;
+    /// # use agera::lang::future::future_race;
     /// # async fn f() {
     /// let (value, index) = future_race(list_of_futures).await;
     /// # }
