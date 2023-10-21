@@ -22,3 +22,7 @@ agera::application::root().spawn_child(()).id(); // Entity
 Agera is still in development, therefore it is not released yet. It should feel similiar to Adobe AIR or Flash Platform, but using the entity-component-system pattern and containing additional built-in features.
 
 - [Here are short plans](docs/plans.md)
+
+Additional notes:
+
+- Agera projects must use the nightly Rust compiler to leverage language features, such as use of declarative macros and `try` blocks.

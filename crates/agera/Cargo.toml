@@ -21,3 +21,14 @@ maplit = "1.0.2"
 once_cell = "1.18.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.107"
+
+# Dependencies for native targets
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.29.1", features = ["macros", "time", "rt"], optional = true }
+
+# Dependencies for the browser
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys = { version = "0.3.64", optional = true }
+web-sys = { version = "0.3.64", optional = true, features = ["AbortController", "Window"] }
+wasm-bindgen = { version = "0.2.87", optional = true }
+wasm-bindgen-futures = { version = "0.4.37", optional = true }

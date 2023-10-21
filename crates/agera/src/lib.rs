@@ -2,6 +2,7 @@
 
 pub mod application;
 pub mod ecs;
+pub mod target_platform;
 pub mod util;
 
 /// Commonly used items in Agera application code.
