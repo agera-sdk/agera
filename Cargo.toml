@@ -2,4 +2,6 @@
 resolver = "2"
 members = [
     "crates/agera",
+    "crates/agera_sdk_application_descriptor",
+    "crates/agera_sdk_build",
 ]
