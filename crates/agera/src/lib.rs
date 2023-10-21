@@ -3,6 +3,7 @@
 pub mod application;
 pub mod ecs;
 pub mod target;
+pub mod timer;
 pub mod util;
 
 /// Commonly used items in Agera application code.
@@ -53,4 +54,5 @@ pub mod common {
     pub use crate::util::{ByAddress, ByThinAddress};
     pub use crate::util::Lazy;
     pub use crate::util::temporal;
+    pub use crate::util::future;
 }

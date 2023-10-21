@@ -31,6 +31,10 @@ The following items are available when building for the browser:
 
 /// Expands an item solely if the build target is a native platform.
 pub macro if_native_target {
+    ($it:block) => {
+        #[cfg(not(target_arch = "wasm32"))]
+        $it
+    },
     ($($it:item)+) => {
         $(
             #[cfg(not(target_arch = "wasm32"))]
@@ -41,6 +45,10 @@ pub macro if_native_target {
 
 /// Expands an item solely if the build target is the browser.
 pub macro if_browser_target {
+    ($it:block) => {
+        #[cfg(target_arch = "wasm32")]
+        $it
+    },
     ($($it:item)+) => {
         $(
             #[cfg(target_arch = "wasm32")]
