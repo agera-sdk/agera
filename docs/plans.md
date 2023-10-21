@@ -4,7 +4,7 @@
 
 Agera application projects will be created through the Agera CLI. The generated application projects have the following structure characteristics:
 
-- The Cargo manifest contains metadata that sets Agera application settings, such as the application ID.
+- The application descriptor, `agera-application.json`, contains metadata that sets Agera application settings, such as the application ID.
 - The Cargo build script (`build.rs`) executes Agera build bootstrap code.
 - The application entry point (`src/main.rs`) executes Agera bootstrap code.
 
