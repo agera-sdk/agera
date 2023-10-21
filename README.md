@@ -6,6 +6,8 @@
 
 </p>
 
+> The SDK is in no usable state yet. No significant work has been put yet, therefore it currently does not include graphical display, sound or other media APIs.
+
 Develop rich internet applications robustly through Agera SDK.
 
 The Agera SDK is being built in the Rust language. However, unlike other Rust frameworks, it does not require knowledge of the Rust ecosystem: the framework bundles all necessary dependencies into the application.
