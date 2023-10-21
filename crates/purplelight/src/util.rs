@@ -40,4 +40,10 @@ pub use lazy_regex::{
     Captures,
 };
 pub use uri::*;
+pub use literals::{
+    btreemap,
+    btreeset,
+    hashmap,
+    hashset,
+};
 pub use by_address::{ByAddress, ByThinAddress};
