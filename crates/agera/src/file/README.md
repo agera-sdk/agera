@@ -1,0 +1,99 @@
+# agera::file
+
+File API.
+
+## Progress
+
+- [ ] `file.exists()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.is_directory()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.is_file()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.is_symbolic_link()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.canonicalize()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.canonicalize_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.copy_to()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.copy_to_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.create_directory()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.create_directory_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.read_bytes()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.read_bytes_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.read_utf8()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.read_utf8_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.get_directory_listing()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_directory_if_empty()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_directory_if_empty_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_all_directory()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_all_directory_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_file()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.delete_file_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.rename()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.rename_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.write()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.write_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.creation_date()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.creation_date_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.modification_date()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.modification_date_async()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.size()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.size_async()`
+  - [ ] Native
+  - [ ] Browser
