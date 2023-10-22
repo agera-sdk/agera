@@ -26,6 +26,3 @@ pub fn world_mut() -> &'static mut Lazy<World> {
 
 mod bootstrap;
 pub use bootstrap::*;
-
-mod file;
-pub use file::*;

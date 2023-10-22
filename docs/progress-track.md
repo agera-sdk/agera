@@ -1,9 +1,12 @@
 # Progress track
 
+## Application build
+
+- Refer to https://github.com/rust-mobile/xbuild
+
 ## Processing
 
-- [ ] Setup application file paths (at the `agera::application::start` macro, the internal `agera::application::file` module and the `agera::build::start` macro)
-  - The application installation path is obtained as a function instead of a direct static..
+- [ ] Setup application target details (at the `agera::application::start` macro, the internal `agera::application::file` module and the `agera::build::start` macro)
   - Platforms:
     - [ ] Windows
     - [ ] Linux
@@ -15,6 +18,11 @@
 
 File API.
 
+- [ ] Access to various directories, including user directories
+  - [ ] Windows, Linux
+    - Refer to https://crates.io/crates/dirs
+  - [ ] Android
+  - [ ] Browser (return `None`)
 - [ ] `file.exists()`
   - [ ] Native
   - [ ] Browser

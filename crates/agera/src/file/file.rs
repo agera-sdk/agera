@@ -96,7 +96,7 @@ fn uri_to_native_path(uri: &str) -> String {
         return regex_replace!(r"^/{2,3}", &decode_uri(&uri[5..]), |_| "".to_owned()).into_owned();
     }
     #[cfg(not(target_os = "windows"))] {
-        return decode_uri(uri);
+        return regex_replace!(r"^/{0,2}", &decode_uri(&uri[5..]), |_| "/".to_owned()).into_owned();
     }
 }
 
@@ -105,6 +105,37 @@ fn native_path_to_uri(path: &str) -> String {
         format!("file:///{}", encode_uri(&path))
     }
     #[cfg(not(target_os = "windows"))] {
-        format!("file:{}", encode_uri(&path))
+        format!("file:/{}", encode_uri(&path))
     }
+}
+
+#[path = "target.rs"]
+mod target;
+
+fn application_installation_directory() -> String {
+    todo!();
+}
+
+fn application_storage_directory() -> String {
+    todo!();
+}
+
+fn downloads_directory() -> Option<String> {
+    todo!();
+}
+
+fn documents_directory() -> Option<String> {
+    todo!();
+}
+
+fn pictures_directory() -> Option<String> {
+    todo!();
+}
+
+fn music_directory() -> Option<String> {
+    todo!();
+}
+
+fn videos_directory() -> Option<String> {
+    todo!();
 }

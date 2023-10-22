@@ -3,14 +3,19 @@ Work with the target platform.
 
 # Native platforms
 
-When building an Agera application for a native platform such as the Windows
-operating system, Agera internally uses the following:
-
-- Tokio runtime
-
 The following items are available when building for native platforms:
 
-- `agera::target::tokio` — Alias to the `tokio` crate.
+- `agera::target::tokio` — Alias to the `tokio` crate, an asynchronous runtime for Rust.
+
+# Android platform
+
+The folllowing items are available when building an Agera application
+for the Android operating system:
+
+- `agera::target::activity` — Alias to the `android_activity` crate.
+- `agera::target::jni` — Alias to the `jni` crate.
+- `agera::target::application()` — Returns an `agera::target::activity::AndroidApp` value
+providing access to the Android application.
 
 # Browser
 
@@ -28,6 +33,9 @@ The following items are available when building for the browser:
 - `agera::target::js_futures` — Alias to the `wasm_bindgen_futures` crate.
 - `agera::target::js` — Alias to the `js_sys` crate.
 */
+
+use crate::common::*;
+use std::sync::RwLock;
 
 /// Expands an item solely if the build target is a native platform.
 pub macro if_native_target {
@@ -59,6 +67,21 @@ pub macro if_browser_target {
 
 if_native_target! {
     pub use tokio;
+}
+
+#[cfg(target_os = "android")]
+pub use ::android_activity as activity;
+
+#[cfg(target_os = "android")]
+pub use ::jni;
+
+#[cfg(target_os = "android")]
+#[doc(hidden)]
+pub static APPLICATION: Lazy<RwLock<Option<activity::AndroidApp>>> = Lazy::new(|| RwLock::new(None));
+
+#[cfg(target_os = "android")]
+pub fn application() -> activity::AndroidApp {
+    APPLICATION.read().unwrap().as_ref().unwrap().clone()
 }
 
 if_browser_target! {
