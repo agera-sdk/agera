@@ -1,4 +1,4 @@
-use crate::common::*;
+use crate::{common::*, target::{if_native_target, unsupported_platform, if_browser_target}};
 use file_paths::*;
 
 /// Represents a file, either in the file system, application or
@@ -112,12 +112,32 @@ fn native_path_to_uri(path: &str) -> String {
 #[path = "target.rs"]
 mod target;
 
-fn application_installation_directory() -> String {
-    todo!();
+pub(crate) fn application_installation_directory() -> String {
+    if_native_target! {{
+        if cfg!(target_os = "android") {
+            let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
+            return FlexPath::new_common(&path).resolve(".install").to_string();
+        } else {
+            unsupported_platform!();
+        }
+    }}
+    if_browser_target! {{
+        unsupported_platform!();
+    }}
 }
 
-fn application_storage_directory() -> String {
-    todo!();
+pub(crate) fn application_storage_directory() -> String {
+    if_native_target! {{
+        if cfg!(target_os = "android") {
+            let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
+            return FlexPath::new_common(&path).resolve(".storage").to_string();
+        } else {
+            unsupported_platform!();
+        }
+    }}
+    if_browser_target! {{
+        unsupported_platform!();
+    }}
 }
 
 fn downloads_directory() -> Option<String> {

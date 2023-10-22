@@ -13,42 +13,43 @@
 /// ```
 pub macro start {
     ($start_action:expr) => {
-        agera::target::if_native_target! {
+        ::agera::target::if_native_target! {
             use ::agera::target::tokio as __agera_target_tokio__;
 
-            #[cfg(not(target_os = "android"))]
-            #[__agera_target_tokio__::main(crate = "__agera_target_tokio__")]
-            async fn main() {
-                let local_task_set = ::agera::target::tokio::task::LocalSet::new();
-                local_task_set.run_until(async {
-                    unsafe {
-                        ::agera::application::BOOTSTRAPPED = true;
-                    }
-                    $start_action.await;
-                }).await;
-            }
+            ::agera::common::cfg_if! {
+                // Android
+                if #[cfg(target_os = "android")] {
+                    #[no_mangle]
+                    fn android_main(app: AndroidApp) {
+                        *(::agera::target::APPLICATION.write().unwrap()) = Some(app.clone());
+                        ::std::fs::create_dir_all(&(::agera::file::application_installation_directory())).unwrap();
+                        ::std::fs::create_dir_all(&(::agera::file::application_storage_directory())).unwrap();
 
-            #[cfg(target_os = "android")]
-            #[no_mangle]
-            fn android_main(app: AndroidApp) {
-                *(::agera::target::APPLICATION.write().unwrap()) = Some(app.clone());
-
-                let local_task_set = ::agera::target::tokio::task::LocalSet::new();
-                local_task_set.run_until(async {
-                    unsafe {
-                        ::agera::application::BOOTSTRAPPED = true;
+                        let local_task_set = ::agera::target::tokio::task::LocalSet::new();
+                        local_task_set.run_until(async {
+                            unsafe { ::agera::application::BOOTSTRAPPED = true; }
+                            $start_action.await;
+                        }).await;
                     }
-                    $start_action.await;
-                }).await;
+                // Not { Android }
+                } else {
+                    #[__agera_target_tokio__::main(crate = "__agera_target_tokio__")]
+                    async fn main() {
+                        let local_task_set = ::agera::target::tokio::task::LocalSet::new();
+                        local_task_set.run_until(async {
+                            unsafe { ::agera::application::BOOTSTRAPPED = true; }
+                            $start_action.await;
+                        }).await;
+                    }
+                }
             }
         }
 
-        agera::target::if_browser_target! {
+        // Browser
+        ::agera::target::if_browser_target! {
             fn main() {
                 ::agera::common::future::exec(async {
-                    unsafe {
-                        ::agera::application::BOOTSTRAPPED = true;
-                    }
+                    unsafe { ::agera::application::BOOTSTRAPPED = true; }
                     $start_action.await;
                 });
             }

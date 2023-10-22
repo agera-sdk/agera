@@ -12,8 +12,8 @@ The following items are available when building for native platforms:
 The folllowing items are available when building an Agera application
 for the Android operating system:
 
-- `agera::target::activity` — Alias to the `android_activity` crate.
-- `agera::target::jni` — Alias to the `jni` crate.
+- `agera::target::activity` — Alias to the [`android_activity`](https://crates.io/crates/android-activity) crate.
+- `agera::target::jni` — Alias to the [`jni`](https://crates.io/crates/jni) crate.
 - `agera::target::application()` — Returns an `agera::target::activity::AndroidApp` value
 providing access to the Android application.
 
@@ -62,6 +62,12 @@ pub macro if_browser_target {
             #[cfg(target_arch = "wasm32")]
             $it
         )+
+    },
+}
+
+pub(crate) macro unsupported_platform {
+    () => {
+        panic!("Unsupported platform");
     },
 }
 

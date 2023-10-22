@@ -23,3 +23,5 @@ pub fn default<T: Default>() -> T {
 pub use by_address::{ByAddress, ByThinAddress};
 
 pub use once_cell::sync::Lazy;
+
+pub use ::cfg_if::cfg_if;

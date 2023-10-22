@@ -59,6 +59,7 @@ pub mod common {
     };
     pub use crate::util::{ByAddress, ByThinAddress};
     pub use crate::util::Lazy;
+    pub use crate::util::cfg_if;
     pub use crate::util::temporal;
     pub use crate::util::future;
 }

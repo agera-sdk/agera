@@ -10,9 +10,8 @@
   - Platforms:
     - [ ] Windows
     - [ ] Linux
-    - [ ] Android
+    - [x] Android
       - Refer to https://developer.android.com/training/data-storage
-      - Refer to https://developer.android.com/reference/android/content/Context#public-methods
 
 ## agera::file
 
@@ -66,9 +65,11 @@ File API.
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing()`
+  - Guarantee that returned `File`s conform to the same scheme
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing_async()`
+  - Guarantee that returned `File`s conform to the same scheme
   - [ ] Native
   - [ ] Browser
 - [ ] `file.delete_directory_if_empty()`
