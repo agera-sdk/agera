@@ -8,8 +8,8 @@
 
 - [ ] Setup application target details (at the `agera::application::start` macro, the internal `agera::application::file` module and the `agera::build::start` macro)
   - Platforms:
-    - [ ] Windows
-    - [ ] Linux
+    - [ ] Windows/Linux/OSX
+      - Just store the application ID from the application descriptor, which is read by the build script.
     - [x] Android
       - Refer to https://developer.android.com/training/data-storage
 
@@ -18,7 +18,7 @@
 File API.
 
 - [ ] Access to various directories, including user directories
-  - [ ] Windows, Linux
+  - [ ] Windows, Linux, OSX
     - Refer to https://crates.io/crates/dirs
   - [ ] Android
   - [ ] Browser (return `None`)

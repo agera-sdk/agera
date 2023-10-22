@@ -1,6 +1,7 @@
 use std::sync::{Arc, RwLock};
+use crate::common::*;
 
-pub type EventListenerList<T> = Arc<RwLock<Vec<Arc<EventListener<T>>>>>;
+pub type EventListenerList<T> = Arc<RwLock<Vec<EventListener<T>>>>;
 pub type EventListenerFunction<T> = Box<dyn Fn(T) + Send + Sync + 'static>;
 
 /// An event emitter.
@@ -26,7 +27,7 @@ impl<T: Clone> EventEmitter<T> {
     }
 
     #[doc(hidden)]
-    pub fn add_listener(&self, function: EventListenerFunction<T>) -> Arc<EventListener<T>> {
+    pub fn add_listener(&self, function: EventListenerFunction<T>) -> EventListener<T> {
         let listener = EventListener::new(self.listener_seq(), function);
         listener.add();
         listener
@@ -36,15 +37,15 @@ impl<T: Clone> EventEmitter<T> {
     pub fn emit(&self, data: T) {
         let mut list_2 = vec![];
         for listener in &*self.listener_list.read().unwrap() {
-            list_2.push(Arc::clone(listener));
+            list_2.push(listener.clone());
         }
         for listener in list_2 {
-            (listener.function)(data.clone());
+            (listener.inner.function)(data.clone());
         }
     }
 }
 
-/// Creates an event listener to an event emitter, returning `Arc<EventListener<T>>`.
+/// Creates an event listener to an event emitter, returning `EventListener<T>`.
 /// 
 /// # Syntax
 /// 
@@ -63,35 +64,57 @@ pub macro event_listener {
 }
 
 pub struct EventListener<T: Clone> {
-    listener_list: EventListenerList<T>,
-    function: EventListenerFunction<T>,
+    inner: Arc<EventListenerInner<T>>,
+}
+
+impl<T: Clone> PartialEq for EventListener<T> {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.inner, &other.inner)
+    }
+}
+
+impl<T: Clone> Eq for EventListener<T> {}
+
+impl<T: Clone> Clone for EventListener<T> {
+    fn clone(&self) -> Self {
+        Self {
+            inner: Arc::clone(&self.inner),
+        }
+    }
 }
 
 impl<T: Clone> EventListener<T> {
-    pub fn new(listener_list: EventListenerList<T>, function: EventListenerFunction<T>) -> Arc<Self> {
-        Arc::new(Self {
-            listener_list,
-            function,
-        })
+    pub fn new(listener_list: EventListenerList<T>, function: EventListenerFunction<T>) -> Self {
+        Self {
+            inner: Arc::new(EventListenerInner {
+                listener_list,
+                function,
+            }),
+        }
     }
 
     /// Adds the event listener to the sequence of listeners.
     /// This method is called implicitly by the [`event_listener!`] macro.
-    pub fn add(self: &Arc<Self>) {
+    pub fn add(&self) {
         self.remove();
-        let list = &self.listener_list;
-        list.write().unwrap().push(Arc::clone(self));
+        let list = &self.inner.listener_list;
+        list.write().unwrap().push(self.clone());
+    }
+
+    /// Indicates if the event listener is actively present in the sequence of listeners.
+    pub fn is_active(&self) -> bool {
+        let list = &self.inner.listener_list;
+        list.read().unwrap().contains(self)
     }
 
     /// Removes the event listener from the sequence of listeners.
-    pub fn remove(self: &Arc<Self>) {
-        let list = &self.listener_list;
-        let list_len = list.read().unwrap().len();
-        for i in 0..list_len {
-            if Arc::ptr_eq(&list.read().unwrap()[i], self) {
-                list.write().unwrap().remove(i);
-                break;
-            }
-        }
+    pub fn remove(&self) {
+        let list = &self.inner.listener_list;
+        list.write().unwrap().remove_equals(self);
     }
+}
+
+struct EventListenerInner<T: Clone> {
+    listener_list: EventListenerList<T>,
+    function: EventListenerFunction<T>,
 }

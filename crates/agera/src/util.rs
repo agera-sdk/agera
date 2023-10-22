@@ -25,3 +25,33 @@ pub use by_address::{ByAddress, ByThinAddress};
 pub use once_cell::sync::Lazy;
 
 pub use ::cfg_if::cfg_if;
+
+/// Provides additional methods for the standard `Vec<T>` type.
+pub trait VectorExtensions<T> {
+    /// Finds the index of a value.
+    fn index_of(&self, value: &T) -> Option<usize> where T: Eq;
+
+    /// Removes an element that meets the criteria `element == value`.
+    fn remove_equals(&mut self, value: &T) -> bool  where T: Eq;
+}
+
+impl<T> VectorExtensions<T> for Vec<T> {
+    fn index_of(&self, value: &T) -> Option<usize> where T: Eq {
+        for i in 0..self.len() {
+            if self[i] == *value {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    fn remove_equals(&mut self, value: &T) -> bool  where T: Eq {
+        let i = self.index_of(value);
+        if let Some(i) = i {
+            self.remove(i);
+            true
+        } else {
+            false
+        }
+    }
+}
