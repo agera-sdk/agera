@@ -22,6 +22,11 @@ pub mod common {
         BTreeSet,
     };
     pub use crate::util::default;
+    pub use crate::util::event_emitter::{
+        EventEmitter,
+        EventListener,
+        event_listener,
+    };
 
     pub use crate::util::bytes::{
         Bytes,

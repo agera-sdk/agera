@@ -3,25 +3,10 @@ Work with timing and tickers.
 */
 
 pub use std::time::Duration;
-use std::{fmt::Display, ops::{Add, AddAssign, Sub, SubAssign}, sync::{Arc, RwLock}};
+use std::{ops::{Add, AddAssign, Sub, SubAssign}, sync::{Arc, RwLock}};
 use crate::{target::{if_native_target, if_browser_target}, common::*};
 
 mod target;
-
-/// Error returned by [`timeout`] and [`timeout_at`].
-/// 
-/// This error is returned when a timeout expires before the function
-/// was able to finish.
-#[derive(PartialEq, Clone, Debug, Copy)]
-pub struct ElapsedError;
-
-impl Display for ElapsedError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Timeout expired")
-    }
-}
-
-impl std::error::Error for ElapsedError {}
 
 /// A measurement of a monotonically nondecreasing clock. Opaque and useful only with `Duration`.
 /// 
@@ -205,7 +190,7 @@ pub async fn wait_until(deadline: Instant) {
 /// # Cancellation
 ///
 /// An ticker is disposed when its variable is dropped.
-/// Use [`free_interval`] if you need an ticker that runs
+/// Use [`free_interval!`] if you need an ticker that runs
 /// separately and can be cancelled dynamically.
 ///
 /// # Panics
@@ -287,7 +272,7 @@ pub fn ticker(period: Duration) -> Ticker {
 /// # Cancellation
 ///
 /// An ticker is disposed when its variable is dropped.
-/// Use [`free_interval`] if you need an ticker that runs
+/// Use [`free_interval!`] if you need an ticker that runs
 /// separately and can be cancelled dynamically.
 /// 
 /// # Panics
@@ -466,7 +451,7 @@ pub fn free_timeout(callback: Box<(dyn Fn() + Send + Sync + 'static)>, duration:
 }
 
 /// A timeout that can be stopped at anytime, returned
-/// from the [`free_timeout`] function.
+/// from the [`free_timeout!`] macro.
 /// 
 /// To stop the timeout, call `timeout.stop`.
 pub struct FreeTimeout {
@@ -567,11 +552,10 @@ pub fn free_interval(callback: Box<(dyn Fn(Duration) + Send + Sync + 'static)>, 
 }
 
 /// An ticker that can be stopped at anytime, returned
-/// from the [`free_animation_interval`] and [`free_interval`] functions.
+/// from the [`free_animation_interval!`] and [`free_interval!`] macros.
 /// 
 /// To stop the ticker, call `ticker.stop`.
 pub struct FreeInterval {
-    // inner: target::FreeTimeout,
     stopped: Arc<RwLock<bool>>,
 }
 
