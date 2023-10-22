@@ -48,7 +48,7 @@ pub mod common {
         regex_replace,
         regex_replace_all,
         Regex,
-        Captures,
+        Captures as RegexCaptures,
     };
     pub use crate::util::uri::*;
     pub use crate::util::literals::{

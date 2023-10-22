@@ -1,8 +1,5 @@
 use crate::common::*;
-use file_paths::{
-    Path as FlexPath,
-    PlatformPathVariant as FlexPathVariant,
-};
+use file_paths::*;
 
 /// Represents a file, either in the file system, application or
 /// application storage directory.
@@ -24,17 +21,19 @@ impl File {
         if path_or_uri.starts_with("file:") {
             File {
                 scheme: FileScheme::File,
-                path: uri_to_native_path(&FlexPath::new_native(path_or_uri).to_string()),
+                path: FlexPath::new_native(&uri_to_native_path(path_or_uri)).to_string(),
             }
         } else if path_or_uri.starts_with("app:") {
+            let path = regex_replace!(r"^/{0,2}", &decode_uri(&path_or_uri[4..]), |_| "/".to_owned()).into_owned();
             File {
                 scheme: FileScheme::App,
-                path: uri_to_app_path(&FlexPath::new_native(path_or_uri).to_string()),
+                path: FlexPath::new_common(&path).to_string(),
             }
         } else if path_or_uri.starts_with("app-storage:") {
+            let path = regex_replace!(r"^/{0,2}", &decode_uri(&path_or_uri[12..]), |_| "/".to_owned()).into_owned();
             File {
                 scheme: FileScheme::AppStorage,
-                path: uri_to_app_storage_path(&FlexPath::new_native(path_or_uri).to_string()),
+                path: FlexPath::new_common(&path).to_string(),
             }
         } else {
             assert!(
@@ -60,10 +59,10 @@ impl File {
                 native_path_to_uri(&self.path)
             },
             FileScheme::App => {
-                app_path_to_uri(&self.path)
+                format!("app:/{}", encode_uri(&self.path))
             },
             FileScheme::AppStorage => {
-                app_storage_path_to_uri(&self.path)
+                format!("app-storage:/{}", encode_uri(&self.path))
             },
         }
     }
@@ -78,7 +77,7 @@ impl File {
 
     fn flex_path_variant(&self) -> FlexPathVariant {
         match self.scheme {
-            FileScheme::File => FlexPathVariant::NATIVE,
+            FileScheme::File => FlexPathVariant::native(),
             _ => FlexPathVariant::Common,
         }
     }
@@ -101,16 +100,6 @@ fn uri_to_native_path(uri: &str) -> String {
     }
 }
 
-fn uri_to_app_path(uri: &str) -> String {
-    assert!(uri.starts_with("app:"));
-    return regex_replace!(r"^/{2}", &decode_uri(&uri[4..]), |_| "/".to_owned()).into_owned();
-}
-
-fn uri_to_app_storage_path(uri: &str) -> String {
-    assert!(uri.starts_with("app-storage:"));
-    return regex_replace!(r"^/{2}", &decode_uri(&uri[12..]), |_| "/".to_owned()).into_owned();
-}
-
 fn native_path_to_uri(path: &str) -> String {
     #[cfg(target_os = "windows")] {
         format!("file:///{}", encode_uri(&path))
@@ -118,12 +107,4 @@ fn native_path_to_uri(path: &str) -> String {
     #[cfg(not(target_os = "windows"))] {
         format!("file:{}", encode_uri(&path))
     }
-}
-
-fn app_path_to_uri(path: &str) -> String {
-    format!("app:{}", encode_uri(&path))
-}
-
-fn app_storage_path_to_uri(path: &str) -> String {
-    format!("app-storage:{}", encode_uri(&path))
 }
