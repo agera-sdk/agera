@@ -2,10 +2,14 @@
 
 ## Processing
 
-- [ ] Setup application installation path (at `agera::application::start` and `agera::build::start`)
-  - [ ] Windows
-  - [ ] Linux
-  - [ ] Android
+- [ ] Setup application file paths (at the `agera::application::start` macro, the internal `agera::application::file` module and the `agera::build::start` macro)
+  - The application installation path is obtained as a function instead of a direct static..
+  - Platforms:
+    - [ ] Windows
+    - [ ] Linux
+    - [ ] Android
+      - Refer to https://developer.android.com/training/data-storage
+      - Refer to https://developer.android.com/reference/android/content/Context#public-methods
 
 ## agera::file
 
