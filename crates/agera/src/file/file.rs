@@ -1,6 +1,17 @@
 use crate::common::*;
-use file_paths::Path as FlexPath;
+use file_paths::{
+    Path as FlexPath,
+    PlatformPathVariant as FlexPathVariant,
+};
 
+/// Represents a file, either in the file system, application or
+/// application storage directory.
+/// 
+/// The following URIs are supported:
+/// 
+/// * `file:` — A file located in the regular file system.
+/// * `app:` — A file located in the application installation directory.
+/// * `app-storage:` — A file located in the application storage directory.
 #[derive(Clone, PartialEq)]
 pub struct File {
     scheme: FileScheme,
@@ -8,27 +19,31 @@ pub struct File {
 }
 
 impl File {
-    /// Creates a file with a specified path or URI.
+    /// Creates a file with a specified native path or URI.
     pub fn new(path_or_uri: &str) -> File {
         if path_or_uri.starts_with("file:") {
             File {
                 scheme: FileScheme::File,
-                path: uri_to_native_path(&FlexPath::new_native(&path_or_uri).to_string()),
+                path: uri_to_native_path(&FlexPath::new_native(path_or_uri).to_string()),
             }
         } else if path_or_uri.starts_with("app:") {
             File {
                 scheme: FileScheme::App,
-                path: uri_to_app_path(&FlexPath::new_native(&path_or_uri).to_string()),
+                path: uri_to_app_path(&FlexPath::new_native(path_or_uri).to_string()),
             }
         } else if path_or_uri.starts_with("app-storage:") {
             File {
                 scheme: FileScheme::AppStorage,
-                path: uri_to_app_storage_path(&FlexPath::new_native(&path_or_uri).to_string()),
+                path: uri_to_app_storage_path(&FlexPath::new_native(path_or_uri).to_string()),
             }
         } else {
+            assert!(
+                regex_is_match!(r"^[^:]+:", path_or_uri),
+                "File::new() was supplied an unsupported URI scheme"
+            );
             File {
                 scheme: FileScheme::File,
-                path: FlexPath::new_native(&path_or_uri).to_string(),
+                path: FlexPath::new_native(path_or_uri).to_string(),
             }
         }
     }
@@ -52,9 +67,24 @@ impl File {
             },
         }
     }
+
+    /// Resolves path to a file or directory.
+    pub fn resolve_path(&self, path: &str) -> File {
+        File {
+            scheme: self.scheme,
+            path: FlexPath::new(&self.path, self.flex_path_variant()).resolve(path).to_string(),
+        }
+    }
+
+    fn flex_path_variant(&self) -> FlexPathVariant {
+        match self.scheme {
+            FileScheme::File => FlexPathVariant::NATIVE,
+            _ => FlexPathVariant::Common,
+        }
+    }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 enum FileScheme {
     File,
     App,

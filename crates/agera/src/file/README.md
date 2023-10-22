@@ -46,7 +46,10 @@ File API.
 - [ ] `file.read_utf8_async()`
   - [ ] Native
   - [ ] Browser
-- [ ] `file.get_directory_listing()`
+- [ ] `file.directory_listing()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.directory_listing_async()`
   - [ ] Native
   - [ ] Browser
 - [ ] `file.delete_directory_if_empty()`
@@ -55,10 +58,10 @@ File API.
 - [ ] `file.delete_directory_if_empty_async()`
   - [ ] Native
   - [ ] Browser
-- [ ] `file.delete_all_directory()`
+- [ ] `file.delete_directory()`
   - [ ] Native
   - [ ] Browser
-- [ ] `file.delete_all_directory_async()`
+- [ ] `file.delete_directory_async()`
   - [ ] Native
   - [ ] Browser
 - [ ] `file.delete_file()`
