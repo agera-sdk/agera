@@ -1,8 +1,15 @@
-# agera::file
+# Progress track
+
+## Processing
+
+- [ ] Setup application installation path (at `agera::application::start` and `agera::build::start`)
+  - [ ] Windows
+  - [ ] Linux
+  - [ ] Android
+
+## agera::file
 
 File API.
-
-## Progress
 
 - [ ] `file.exists()`
   - [ ] Native
