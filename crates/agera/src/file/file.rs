@@ -119,22 +119,24 @@ pub fn __agera_File_bootstrap() {
         // Pass
     } else {
         if_native_target! {{
-            std::fs::create_dir_all(application_installation_directory()).unwrap();
+            std::fs::create_dir_all(application_directory()).unwrap();
             std::fs::create_dir_all(application_storage_directory()).unwrap();
         }}
     }
 }
 
-pub(crate) fn application_installation_directory() -> String {
+pub(crate) fn application_directory() -> String {
     if_native_target! {{
-        if cfg!(target_os = "android") {
-            let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-            return std::path::PathBuf::from(&path).join(".install").to_string_lossy().into_owned();
-        } else {
-            if cfg!(debug_assertions) {
-                return std::env::current_dir().unwrap().to_str().unwrap().into();
+        cfg_if! {
+            if #[cfg(target_os = "android")] {
+                let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+                return std::path::PathBuf::from(&path).join(".install").to_string_lossy().into_owned();
             } else {
-                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                if cfg!(debug_assertions) {
+                    return std::env::current_dir().unwrap().to_str().unwrap().into();
+                } else {
+                    return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                }
             }
         }
     }}
@@ -145,14 +147,16 @@ pub(crate) fn application_installation_directory() -> String {
 
 pub(crate) fn application_storage_directory() -> String {
     if_native_target! {{
-        if cfg!(target_os = "android") {
-            let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-            return std::path::PathBuf::from(&path).join(".storage").to_string_lossy().into_owned();
-        } else {
-            if cfg!(debug_assertions) {
-                return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
+        cfg_if! {
+            if #[cfg(target_os = "android")] {
+                let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+                return std::path::PathBuf::from(&path).join(".storage").to_string_lossy().into_owned();
             } else {
-                return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                if cfg!(debug_assertions) {
+                    return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
+                } else {
+                    return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                }
             }
         }
     }}
