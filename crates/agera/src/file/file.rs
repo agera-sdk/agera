@@ -128,15 +128,13 @@ pub fn __agera_File_bootstrap() {
 pub(crate) fn application_installation_directory() -> String {
     if_native_target! {{
         if cfg!(target_os = "android") {
-            let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
-            return FlexPath::new_common(&path).resolve(".install").to_string();
+            let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+            return std::path::PathBuf::from(&path).join(".install").to_string_lossy().into_owned();
         } else {
             if cfg!(debug_assertions) {
                 return std::env::current_dir().unwrap().to_str().unwrap().into();
-            } else if cfg!(target_os = "windows") {
-                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             } else {
-                unsupported_platform!();
+                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             }
         }
     }}
@@ -148,13 +146,13 @@ pub(crate) fn application_installation_directory() -> String {
 pub(crate) fn application_storage_directory() -> String {
     if_native_target! {{
         if cfg!(target_os = "android") {
-            let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
-            return FlexPath::new_common(&path).resolve(".storage").to_string();
+            let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+            return std::path::PathBuf::from(&path).join(".storage").to_string_lossy().into_owned();
         } else {
             if cfg!(debug_assertions) {
                 return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
             } else {
-                unsupported_platform!();
+                return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             }
         }
     }}
