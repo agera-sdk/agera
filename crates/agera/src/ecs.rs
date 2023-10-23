@@ -20,7 +20,7 @@ Entities are created directly when adding a child entity to an existing entity. 
 the following adds an empty `Entity` to the application's root entity:
 
 ```
-use agera::ecs::common::*;
+use agera::common::*;
 let child = agera::application::root().spawn_child(());
 ```
 */

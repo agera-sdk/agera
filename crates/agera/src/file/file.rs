@@ -130,12 +130,14 @@ pub(crate) fn application_directory() -> String {
         cfg_if! {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-                return std::path::PathBuf::from(&path).join(".install").to_string_lossy().into_owned();
+                return std::path::PathBuf::from(&path).join("install").to_string_lossy().into_owned();
+            } else if #[cfg(target_os = "windows")] {
+                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             } else {
                 if cfg!(debug_assertions) {
                     return std::env::current_dir().unwrap().to_str().unwrap().into();
                 } else {
-                    return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                    return dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned();
                 }
             }
         }
@@ -150,12 +152,14 @@ pub(crate) fn application_storage_directory() -> String {
         cfg_if! {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-                return std::path::PathBuf::from(&path).join(".storage").to_string_lossy().into_owned();
+                return std::path::PathBuf::from(&path).join("storage").to_string_lossy().into_owned();
+            } else if #[cfg(target_os = "android")] {
+                return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             } else {
                 if cfg!(debug_assertions) {
                     return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
                 } else {
-                    return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                    return dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned();
                 }
             }
         }
