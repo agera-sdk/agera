@@ -1,6 +1,6 @@
 use crate::common::*;
 use std::{
-    any::{Any, TypeId},
+    any::Any,
     sync::{Arc, RwLock, Weak},
     hash::Hash,
 };
@@ -100,6 +100,88 @@ impl Entity {
             i += 1;
         }
         false
+    }
+    
+    pub fn parent(&self) -> Option<Entity> {
+        self.inner.parent.read().unwrap().upgrade()
+    }
+
+    pub fn children(&self) -> Vec<Entity> {
+        let mut c = vec![];
+        for child in self.inner.children.read().unwrap().iter() {
+            c.push(child.clone());
+        }
+        c
+    }
+
+    pub fn child_at(&self, index: usize) -> Option<Entity> {
+        if index < self.num_children() { Some(self.inner.children.read().unwrap()[index].clone()) } else { None }
+    }
+
+    /// Returns the number of children.
+    pub fn num_children(&self) -> usize {
+        self.inner.children.read().unwrap().len()
+    }
+
+    /// Adds a child entity to the end of the children collection.
+    /// If `child` is already child of an entity, it is removed and then added
+    /// as part of this entity.
+    pub fn add_child(&self, child: &Entity) {
+        child.remove_from_parent();
+        *child.inner.parent.write().unwrap() = self.downgrade_ref();
+        self.inner.children.write().unwrap().push(child.clone());
+    }
+
+    /// Adds a child entity at the index `index` of the children collection.
+    /// If `child` is already child of an entity, it is removed and then added
+    /// as part of this entity.
+    /// 
+    /// # Panics
+    /// 
+    /// This method panics if `index` is out of bounds.
+    pub fn add_child_at(&self, index: usize, child: &Entity) {
+        child.remove_from_parent();
+        assert!(index < self.num_children(), "Specified index is out of bounds.");
+        *child.inner.parent.write().unwrap() = self.downgrade_ref();
+        self.inner.children.write().unwrap().insert(index, child.clone());
+    }
+
+    /// Swaps two children.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if any of the specified entities is not part of the entity.
+    pub fn swap_children(&self, child_1: &Entity, child_2: &Entity) {
+        let indices = [self.inner.children.read().unwrap().index_of(child_1), self.inner.children.read().unwrap().index_of(child_2)];
+        assert!(indices.iter().all(|i| i.is_some()), "Some of the specified indices are out of bounds.");
+        self.inner.children.write().unwrap().swap(indices[0].unwrap(), indices[1].unwrap());
+    }
+
+    /// Swaps two children.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if any of the specified indices is out of bounds.
+    pub fn swap_children_by_indices(&self, child_1: usize, child_2: usize) {
+        assert!([child_1, child_2].iter().all(|&i| i < self.num_children()), "Some of the specified indices are out of bounds.");
+        self.inner.children.write().unwrap().swap(child_1, child_2);
+    }
+
+    /// Removes a child. Returns `true` if the child has been removed, or `false` otherwise.
+    pub fn remove_child(&self, child: &Entity) -> bool {
+        let i = self.inner.children.read().unwrap().index_of(child);
+        if let Some(i) = i {
+            self.inner.children.write().unwrap().remove(i);
+            *child.inner.parent.write().unwrap() = default();
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Removes the entity from its parent. Returns `true` if the child has been removed, or `false` otherwise.
+    pub fn remove_from_parent(&self) -> bool {
+        if let Some(p) = self.parent() { p.remove_child(self) } else { false }
     }
 }
 
