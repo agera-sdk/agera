@@ -120,13 +120,15 @@ pub(crate) fn application_installation_directory() -> String {
         } else {
             if cfg!(debug_assertions) {
                 return std::env::current_dir().unwrap().to_str().unwrap().into();
+            } else if cfg!(target_os = "windows") {
+                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
             } else {
                 unsupported_platform!();
             }
         }
     }}
     if_browser_target! {{
-        unsupported_platform!();
+        panic!("Function must not be used in the web");
     }}
 }
 
@@ -144,7 +146,7 @@ pub(crate) fn application_storage_directory() -> String {
         }
     }}
     if_browser_target! {{
-        unsupported_platform!();
+        panic!("Function must not be used in the web");
     }}
 }
 
