@@ -137,7 +137,7 @@ pub(crate) fn application_storage_directory() -> String {
             return FlexPath::new_common(&path).resolve(".storage").to_string();
         } else {
             if cfg!(debug_assertions) {
-                return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("/agera_sdk_build/storage").to_string_lossy().into_owned();
+                return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
             } else {
                 unsupported_platform!();
             }
