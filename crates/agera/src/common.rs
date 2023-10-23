@@ -58,6 +58,8 @@ pub use crate::util::{
 
     future,
 
+    json,
+
     temporal,
 
     VectorExtensions,
