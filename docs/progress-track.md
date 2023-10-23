@@ -4,6 +4,11 @@
 
 - Refer to https://github.com/rust-mobile/xbuild
 
+## CLI
+
+- Build, run, export
+  - Only Windows/OSX/Linux/Android/Web are supported currently.
+
 ## Processing
 
 - [ ] Setup application target details (at the `agera::application::start` macro, the internal `agera::application::file` module and the `agera::build::start` macro)
@@ -78,10 +83,10 @@ File API.
 - [ ] `file.delete_directory_if_empty_async()`
   - [ ] Native
   - [ ] Browser
-- [ ] `file.delete_directory()`
+- [ ] `file.delete_directory_all()`
   - [ ] Native
   - [ ] Browser
-- [ ] `file.delete_directory_async()`
+- [ ] `file.delete_directory_all_async()`
   - [ ] Native
   - [ ] Browser
 - [ ] `file.delete_file()`

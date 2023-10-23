@@ -28,6 +28,7 @@ pub fn world_mut() -> &'static mut Lazy<World> {
 #[doc(hidden)]
 pub static mut ID: Option<&'static str> = None;
 
+/// The application ID, as a Java package identifier.
 pub fn id() -> String {
     assert_bootstrapped!();
     unsafe { ID.unwrap().to_owned() }

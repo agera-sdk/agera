@@ -15,7 +15,7 @@ pub macro start {
     ($start_action:expr) => {
         async fn __boostrap() {
             // Bootstrap
-            include!(concat!(env!("OUT_DIR"), "/agera_sdk_bootstrap/bootstrap.rs"));
+            include!(concat!(env!("OUT_DIR"), "/agera_sdk_build/bootstrap.rs"));
 
             // Start
             $start_action.await;

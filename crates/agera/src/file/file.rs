@@ -118,7 +118,11 @@ pub(crate) fn application_installation_directory() -> String {
             let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
             return FlexPath::new_common(&path).resolve(".install").to_string();
         } else {
-            unsupported_platform!();
+            if cfg!(debug_assertions) {
+                return std::env::current_dir().unwrap().to_str().unwrap().into();
+            } else {
+                unsupported_platform!();
+            }
         }
     }}
     if_browser_target! {{
@@ -132,7 +136,11 @@ pub(crate) fn application_storage_directory() -> String {
             let path = if let Some(p) = crate::target::application().external_data_path() { p.to_string_lossy().into_owned() } else { crate::target::application().internal_data_path().unwrap().to_string_lossy().into_owned() };
             return FlexPath::new_common(&path).resolve(".storage").to_string();
         } else {
-            unsupported_platform!();
+            if cfg!(debug_assertions) {
+                return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("/agera_sdk_build/storage").to_string_lossy().into_owned();
+            } else {
+                unsupported_platform!();
+            }
         }
     }}
     if_browser_target! {{

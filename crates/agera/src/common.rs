@@ -62,5 +62,5 @@ pub use crate::util::{
 
     VectorExtensions,
 
-    LateSubstitution,
+    LateFormat,
 };
