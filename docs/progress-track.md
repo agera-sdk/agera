@@ -130,3 +130,29 @@ File API.
 ## agera::display
 
 - Refer to https://wgpu.rs
+
+How you work with display objects:
+
+```rust
+use agera::display::*;
+
+// `DisplayObject` is an entity with additional methods
+let object: DisplayObject = DisplayObject::new();
+object.has::<TComponent>();
+object.set_alpha(0);
+object.add_child(&child);
+
+let entity: Entity = object.into();;
+
+// Entity back into a DisplayObject
+let object = DisplayObject::try_from(entity.as_entity());
+```
+
+Types for display objects are built with the `DisplayObject` derive macro, which provides several methods specific to `DisplayObject`:
+
+```rust
+use agera::display::*;
+
+#[derive(DisplayObject)]
+struct CustomDisplayObject {}
+```
