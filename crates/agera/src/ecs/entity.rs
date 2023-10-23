@@ -42,6 +42,7 @@ impl Entity {
     pub fn new() -> Entity {
         Self {
             inner: Arc::new(EntityInner {
+                name: RwLock::new(None),
                 parent: RwLock::new(default()),
                 components: RwLock::new(vec![]),
                 children: RwLock::new(vec![]),
@@ -179,13 +180,72 @@ impl Entity {
         }
     }
 
+    /// Removes all children entities from the entity.
+    pub fn remove_children(&self) {
+        for child in self.children() {
+            *child.inner.parent.write().unwrap() = default();
+        }
+        self.inner.children.write().unwrap().clear();
+    }
+
     /// Removes the entity from its parent. Returns `true` if the child has been removed, or `false` otherwise.
     pub fn remove_from_parent(&self) -> bool {
         if let Some(p) = self.parent() { p.remove_child(self) } else { false }
     }
+
+    /// The name of the entity as used in entity paths.
+    pub fn name(&self) -> Option<String> {
+        self.inner.name.read().unwrap().clone()
+    }
+
+    /// The name of the entity as used in entity paths.
+    pub fn set_name(&self, name: Option<String>) {
+        *self.inner.name.write().unwrap() = name;
+    }
+
+    /**
+    Resolves an entity path. An entity path is resolved as follows:
+
+    1. Let *segments* be the splitting of the path by the slash character (`/`).
+    2. Let *r* be the initial entity.
+    3. For every segment *s*:
+        1. If `s == ".first"`, let *r* be the first child of *r* or otherwise `None`.
+        2. If `s == ".last"`, let *r* be the last child of *r* or otherwise `None`.
+        3. If `s == ".."`, let *r* be the parent of *r* or otherwise `None`.
+        4. If *s* is non-empty, let *r* be a child of *r* such that `child.name() == s` or otherwise `None`.
+    4. Return *r*
+    */
+    pub fn resolve_path(&self, path: &str) -> Option<Entity> {
+        let segments = path.split('/');
+        let mut r: Option<Entity> = Some(self.clone());
+        for s in segments {
+            if r.is_none() {
+                break;
+            }
+            match s {
+                ".first" => {
+                    r = r.unwrap().children().first().map(|c| c.clone());
+                },
+                ".last" => {
+                    r = r.unwrap().children().last().map(|c| c.clone());
+                },
+                ".." => {
+                    r = r.unwrap().parent();
+                },
+                "" => {
+                    // Empty
+                },
+                _ => {
+                    r = r.unwrap().children().iter().find(|c| c.name().as_ref().map(|cn| cn.as_ref()) == Some(s)).map(|c| c.clone());
+                },
+            }
+        }
+        r
+    }
 }
 
 pub struct EntityInner {
+    name: RwLock<Option<String>>,
     parent: RwLock<WeakEntityRef>,
     components: RwLock<Vec<Component>>,
     children: RwLock<Vec<Entity>>,
