@@ -16,6 +16,9 @@ pub macro start {
         async fn __boostrap() {
             // Bootstrap
             include!(concat!(env!("OUT_DIR"), "/agera_sdk_build/bootstrap.rs"));
+            
+            // Setup file directories
+            ::agera::file::__agera_File_bootstrap();
 
             // Start
             $start_action.await;
@@ -66,10 +69,11 @@ pub macro start {
 
 /// Internal property.
 #[doc(hidden)]
-pub static mut BOOTSTRAPPED: bool = false;
+#[allow(non_upper_case_globals)]
+pub static mut __agera_BOOTSTRAPPED: bool = false;
 
 pub(crate) macro assert_bootstrapped {
     () => {
-        assert!(unsafe { crate::application::BOOTSTRAPPED }, "The application must be initialized through 'agera::application::start!(action)'.");
+        assert!(unsafe { crate::application::__agera_BOOTSTRAPPED }, "The application must be initialized through 'agera::application::start!(action)'.");
     },
 }

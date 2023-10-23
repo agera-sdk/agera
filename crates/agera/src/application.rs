@@ -26,12 +26,13 @@ pub fn world_mut() -> &'static mut Lazy<World> {
 
 /// *Internal property.*
 #[doc(hidden)]
-pub static mut ID: Option<&'static str> = None;
+#[allow(non_upper_case_globals)]
+pub static mut __agera_ID: Option<&'static str> = None;
 
 /// The application ID, as a Java package identifier.
 pub fn id() -> String {
     assert_bootstrapped!();
-    unsafe { ID.unwrap().to_owned() }
+    unsafe { __agera_ID.unwrap().to_owned() }
 }
 
 mod bootstrap;

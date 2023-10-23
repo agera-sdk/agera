@@ -52,6 +52,12 @@ File API.
 - [ ] `file.create_directory_async()`
   - [ ] Native
   - [ ] Browser
+- [ ] `file.create_directory_all()`
+  - [ ] Native
+  - [ ] Browser
+- [ ] `file.create_directory_all_async()`
+  - [ ] Native
+  - [ ] Browser
 - [ ] `file.read_bytes()`
   - [ ] Native
   - [ ] Browser
@@ -65,11 +71,11 @@ File API.
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing()`
-  - Guarantee that returned `File`s conform to the same scheme
+  - Guarantee that returned `File`s conform to the same scheme. In native targets, for `app:` and `app-storage:`, *do not* resolve symbolic links and relativize the physical path of the scheme to the item path.
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing_async()`
-  - Guarantee that returned `File`s conform to the same scheme
+  - Guarantee that returned `File`s conform to the same scheme, similiar to `directory_listing()`
   - [ ] Native
   - [ ] Browser
 - [ ] `file.delete_directory_if_empty()`

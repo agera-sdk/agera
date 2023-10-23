@@ -112,6 +112,19 @@ fn native_path_to_uri(path: &str) -> String {
 #[path = "target.rs"]
 mod target;
 
+#[doc(hidden)]
+#[allow(non_snake_case)]
+pub fn __agera_File_bootstrap() {
+    if cfg!(debug_assertions) {
+        // Pass
+    } else {
+        if_native_target! {{
+            std::fs::create_dir_all(application_installation_directory()).unwrap();
+            std::fs::create_dir_all(application_storage_directory()).unwrap();
+        }}
+    }
+}
+
 pub(crate) fn application_installation_directory() -> String {
     if_native_target! {{
         if cfg!(target_os = "android") {
