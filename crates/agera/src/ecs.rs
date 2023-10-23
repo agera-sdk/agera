@@ -41,7 +41,7 @@ pub use ::bevy_ecs::{
     world,
 };
 
-/// Commonly used ECS items.
+/// Commonly used entity-component-system items.
 pub mod common {
     pub use super::{
         bundle::Bundle,
@@ -53,30 +53,30 @@ pub mod common {
         component::{Component, ComponentId},
         entity::Entity,
         entity_operations::{
-            Contains as agera_ecs_Entity_Contains,
-            ContainsId as agera_ecs_Entity_ContainsId,
-            ContainsTypeId as agera_ecs_Entity_ContainsTypeId,
-            Despawn as agera_ecs_Entity_Despawn,
-            Get as agera_ecs_Entity_Get,
-            GetRef as agera_ecs_Entity_GetRef,
-            GetById as agera_ecs_Entity_GetById,
-            GetMutById as agera_ecs_Entity_GetMutById,
-            GetMut as agera_ecs_Entity_GetMut,
-            Location as agera_ecs_Entity_Location,
-            Insert as agera_ecs_Entity_Insert,
-            Remove as agera_ecs_Entity_Remove,
+            Contains as agera_Entity_Contains,
+            ContainsId as agera_Entity_ContainsId,
+            ContainsTypeId as agera_Entity_ContainsTypeId,
+            Despawn as agera_Entity_Despawn,
+            Get as agera_Entity_Get,
+            GetRef as agera_Entity_GetRef,
+            GetById as agera_Entity_GetById,
+            GetMutById as agera_Entity_GetMutById,
+            GetMut as agera_Entity_GetMut,
+            Location as agera_Entity_Location,
+            Insert as agera_Entity_Insert,
+            Remove as agera_Entity_Remove,
         },
         event::{Event, EventReader, EventWriter},
         hierarchy::{
-            Children as agera_ecs_Entity_Children,
-            DespawnChildren as agera_ecs_Entity_DespawnChildren,
-            Parent as agera_ecs_Entity_Parent,
-            SpawnChild as agera_ecs_Entity_SpawnChild,
+            Children as agera_Entity_Children,
+            DespawnChildren as agera_Entity_DespawnChildren,
+            Parent as agera_Entity_Parent,
+            SpawnChild as agera_Entity_SpawnChild,
         },
         path_operations::{
-            Name as agera_ecs_Entity_Name,
-            SetName as agera_ecs_Entity_SetName,
-            ResolvePath as agera_ecs_Entity_ResolvePath,
+            Name as agera_Entity_Name,
+            SetName as agera_Entity_SetName,
+            ResolvePath as agera_Entity_ResolvePath,
         },
         query::{Added, Changed, With, Without},
         system::Query,

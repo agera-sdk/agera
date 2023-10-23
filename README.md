@@ -16,10 +16,8 @@ The Agera SDK is being built in the Rust language. However, unlike other Rust fr
 // Everything common to Rust programs
 use agera::common::*;
 
-// Everything common to the entity-component-system.
-// Agera SDK uses `bevy_ecs` for the entity-component-system
+// Agera SDK uses `bevy_ecs` for its entity-component-system pattern
 // and adds several operation traits to Entity.
-use agera::ecs::common::*;
 
 agera::application::root(); // Entity
 agera::application::root().spawn_child(()).id(); // Entity
