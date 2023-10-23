@@ -16,10 +16,7 @@ The application descriptor is the file `agera-application.json` at the project's
 
 Installation files can be added to the descriptor using glob patterns, specifying paths to include and exclude.
 
-Each entry in the `include` and `exclude` arrays is allowed to be in either of the following forms:
-
-- A string resolving to a file path.
-- A string resolving to a directory path — from which files are recursively copied to the application installation directory.
+Each entry in the `include` and `exclude` arrays is allowed to be a glob pattern.
 
 <!--
 
