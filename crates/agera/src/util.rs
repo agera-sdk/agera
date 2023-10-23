@@ -55,3 +55,5 @@ impl<T> VectorExtensions<T> for Vec<T> {
         }
     }
 }
+
+pub use late_substitution::LateSubstitution;

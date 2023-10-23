@@ -25,6 +25,8 @@ impl Display for ParsingError {
     }
 }
 
+impl Error for ParsingError {}
+
 #[derive(Debug)]
 pub struct InvalidId;
 

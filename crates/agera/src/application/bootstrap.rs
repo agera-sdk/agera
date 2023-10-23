@@ -13,8 +13,24 @@
 /// ```
 pub macro start {
     ($start_action:expr) => {
+        async fn __boostrap() {
+            // Bootstrap start
+            include!(concat!(env!("OUT_DIR"), "/agera_sdk_bootstrap/descriptor.rs"));
+
+            // Bootstrap end
+            unsafe { ::agera::application::BOOTSTRAPPED = true; }
+
+            // Start
+            $start_action.await;
+        }
+
         ::agera::target::if_native_target! {
             use ::agera::target::tokio as __agera_target_tokio__;
+
+            fn __start_local_set() -> ::agera::target::tokio::task::LocalSet {
+                let __local_set = ::agera::target::tokio::task::LocalSet::new();
+                __local_set.run_until(__bootstrap())
+            }
 
             ::agera::common::cfg_if! {
                 // Android
@@ -25,21 +41,18 @@ pub macro start {
                         ::std::fs::create_dir_all(&(::agera::file::application_installation_directory())).unwrap();
                         ::std::fs::create_dir_all(&(::agera::file::application_storage_directory())).unwrap();
 
-                        let local_task_set = ::agera::target::tokio::task::LocalSet::new();
-                        local_task_set.run_until(async {
-                            unsafe { ::agera::application::BOOTSTRAPPED = true; }
-                            $start_action.await;
-                        }).await;
+                        #[__agera_target_tokio__::main(crate = "__agera_target_tokio__")]
+                        async fn main() {
+                            __start_local_set().await;
+                        }
+
+                        main();
                     }
                 // Not { Android }
                 } else {
                     #[__agera_target_tokio__::main(crate = "__agera_target_tokio__")]
                     async fn main() {
-                        let local_task_set = ::agera::target::tokio::task::LocalSet::new();
-                        local_task_set.run_until(async {
-                            unsafe { ::agera::application::BOOTSTRAPPED = true; }
-                            $start_action.await;
-                        }).await;
+                        __start_local_set().await;
                     }
                 }
             }
@@ -48,10 +61,7 @@ pub macro start {
         // Browser
         ::agera::target::if_browser_target! {
             fn main() {
-                ::agera::common::future::exec(async {
-                    unsafe { ::agera::application::BOOTSTRAPPED = true; }
-                    $start_action.await;
-                });
+                ::agera::common::future::exec(__bootstrap());
             }
         }
     },
