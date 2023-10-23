@@ -17,11 +17,7 @@
 
 File API.
 
-- [ ] Access to various directories, including user directories
-  - [ ] Windows, Linux, OSX
-    - Refer to https://crates.io/crates/dirs
-  - [ ] Android
-  - [ ] Browser (return `None`)
+- [x] Access to various directories, including user directories
 - [ ] `file.exists()`
   - [ ] Native
   - [ ] Browser

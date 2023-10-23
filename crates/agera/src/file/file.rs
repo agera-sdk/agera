@@ -17,6 +17,8 @@ pub struct File {
 
 impl File {
     /// Creates a file with a specified native path or URI.
+    /// `path_or_uri` is treated as an URI if it starts with either
+    /// `app:` or `app-storage:`.
     pub fn new(path_or_uri: &str) -> File {
         if path_or_uri.starts_with("file:") {
             File {
@@ -36,15 +38,63 @@ impl File {
                 path: FlexPath::new_common(&path).to_string(),
             }
         } else {
-            assert!(
-                regex_is_match!(r"^[^:]+:", path_or_uri),
-                "File::new() was supplied an unsupported URI scheme"
-            );
             File {
                 scheme: FileScheme::File,
                 path: FlexPath::new_native(path_or_uri).to_string(),
             }
         }
+    }
+
+    /// The application's installation directory. The result of this function is equivalent
+    /// to `File::new("app://")`.
+    pub fn application_directory() -> File {
+        File::new("app://")
+    }
+
+    /// The application's storage directory. The result of this function is equivalent
+    /// to `File::new("app-storage://")`.
+    pub fn application_storage_directory() -> File {
+        File::new("app-storage://")
+    }
+
+    /// The user's downloads directory.
+    pub fn downloads_directory() -> Option<File> {
+        Some(File {
+            scheme: FileScheme::File,
+            path: downloads_directory()?,
+        })
+    }
+
+    /// The user's documents directory.
+    pub fn documents_directory() -> Option<File> {
+        Some(File {
+            scheme: FileScheme::File,
+            path: documents_directory()?,
+        })
+    }
+
+    /// The user's pictures directory.
+    pub fn pictures_directory() -> Option<File> {
+        Some(File {
+            scheme: FileScheme::File,
+            path: pictures_directory()?,
+        })
+    }
+
+    /// The user's music directory.
+    pub fn music_directory() -> Option<File> {
+        Some(File {
+            scheme: FileScheme::File,
+            path: music_directory()?,
+        })
+    }
+
+    /// The user's videos directory.
+    pub fn videos_directory() -> Option<File> {
+        Some(File {
+            scheme: FileScheme::File,
+            path: videos_directory()?,
+        })
     }
 
     /// Returns the native path of the file.
@@ -130,14 +180,14 @@ pub(crate) fn application_directory() -> String {
         cfg_if! {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-                return std::path::PathBuf::from(&path).join("install").to_string_lossy().into_owned();
+                std::path::PathBuf::from(&path).join("install").to_string_lossy().into_owned()
             } else if #[cfg(target_os = "windows")] {
-                return dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
                 if cfg!(debug_assertions) {
-                    return std::env::current_dir().unwrap().to_str().unwrap().into();
+                    std::env::current_dir().unwrap().to_str().unwrap().into()
                 } else {
-                    return dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned();
+                    dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned()
                 }
             }
         }
@@ -152,14 +202,14 @@ pub(crate) fn application_storage_directory() -> String {
         cfg_if! {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
-                return std::path::PathBuf::from(&path).join("storage").to_string_lossy().into_owned();
+                std::path::PathBuf::from(&path).join("storage").to_string_lossy().into_owned()
             } else if #[cfg(target_os = "android")] {
-                return dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned();
+                dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
                 if cfg!(debug_assertions) {
-                    return std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned();
+                    std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
                 } else {
-                    return dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned();
+                    dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned()
                 }
             }
         }
@@ -170,21 +220,36 @@ pub(crate) fn application_storage_directory() -> String {
 }
 
 fn downloads_directory() -> Option<String> {
-    todo!();
+    if_native_target! {{
+        dirs::download_dir().map(|d| d.to_string_lossy().into_owned())
+    }}
+    if_browser_target! {{ None }}
 }
 
 fn documents_directory() -> Option<String> {
-    todo!();
+    if_native_target! {{
+        dirs::document_dir().map(|d| d.to_string_lossy().into_owned())
+    }}
+    if_browser_target! {{ None }}
 }
 
 fn pictures_directory() -> Option<String> {
-    todo!();
+    if_native_target! {{
+        dirs::picture_dir().map(|d| d.to_string_lossy().into_owned())
+    }}
+    if_browser_target! {{ None }}
 }
 
 fn music_directory() -> Option<String> {
-    todo!();
+    if_native_target! {{
+        dirs::audio_dir().map(|d| d.to_string_lossy().into_owned())
+    }}
+    if_browser_target! {{ None }}
 }
 
 fn videos_directory() -> Option<String> {
-    todo!();
+    if_native_target! {{
+        dirs::video_dir().map(|d| d.to_string_lossy().into_owned())
+    }}
+    if_browser_target! {{ None }}
 }
