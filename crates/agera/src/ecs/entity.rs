@@ -244,7 +244,7 @@ impl Entity {
     }
 }
 
-pub struct EntityInner {
+struct EntityInner {
     name: RwLock<Option<String>>,
     parent: RwLock<WeakEntityRef>,
     components: RwLock<Vec<Component>>,
