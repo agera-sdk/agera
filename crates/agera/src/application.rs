@@ -24,5 +24,14 @@ pub fn world_mut() -> &'static mut Lazy<World> {
     unsafe { &mut WORLD }
 }
 
+/// *Internal property.*
+#[doc(hidden)]
+pub static mut ID: Option<&'static str> = None;
+
+pub fn id() -> String {
+    assert_bootstrapped!();
+    unsafe { ID.unwrap().to_owned() }
+}
+
 mod bootstrap;
 pub use bootstrap::*;

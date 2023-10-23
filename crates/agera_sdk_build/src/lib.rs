@@ -3,10 +3,8 @@
 use agera_sdk_application_descriptor::ApplicationDescriptor;
 use maplit::hashmap;
 
-/// Executes the build script's main action.
-/// The build script must not define a `main`
-/// function and rather write a main action
-/// using this macro.
+/// Starts the build script. The build script must not define a `main`
+/// function and rather write a main action using this macro.
 /// 
 /// # Syntax
 /// 
@@ -33,9 +31,9 @@ pub fn __bootstrap(output_directory: &str) {
     let project_path = project_path.to_str().unwrap();
     let descriptor = ApplicationDescriptor::from_project(project_path).unwrap();
 
-    // Write to {output_directory}/agera_sdk_bootstrap/descriptor.rs
-    let descriptor_rs_path = output_directory.join("agera_sdk_bootstrap/descriptor.rs");
-    std::fs::write(descriptor_rs_path, include_str!("./template_code/descriptor.rs").late_substitution(hashmap! {
+    // Write to {output_directory}/agera_sdk_bootstrap/bootstrap.rs
+    let descriptor_rs_path = output_directory.join("agera_sdk_bootstrap/bootstrap.rs");
+    std::fs::write(descriptor_rs_path, include_str!("./template_code/bootstrap.rs").late_substitution(hashmap! {
         "id".into() => descriptor.id.clone(),
     })).unwrap();
 }
