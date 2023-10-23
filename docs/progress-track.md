@@ -148,11 +148,21 @@ let entity: Entity = object.into();;
 let object = DisplayObject::try_from(entity.as_entity());
 ```
 
-Types for display objects are built with the `DisplayObject` derive macro, which provides several methods specific to `DisplayObject`:
+Types for display objects are built by implementing `DisplayObjectDelegate`, thus inheriting necessary methods to quickly work with display objects:
 
 ```rust
+use agera::common::*;
 use agera::display::*;
 
-#[derive(DisplayObject)]
-struct CustomDisplayObject {}
+struct CustomDisplayObject(Entity);
+
+impl DisplayObjectDelegate for CustomDisplayObject {
+    fn delegate(&self) -> Entity {
+        self.0
+    }
+}
 ```
+
+## agera::ui
+
+Agera controls, `AgeraControl`, similiarly to display objects, use a delegate trait, `AgeraControlDelegate`. Agera controls are display objects under the hood.

@@ -25,3 +25,9 @@ Agera should feel similiar to Adobe AIR and Apache Flex, but using the entity-co
 Additional notes:
 
 - *About the Rust language*: Developers must use the nightly Rust compiler to leverage language features, such as use of declarative macros and `try` blocks.
+
+When getting started with the CLI, creating a fresh project will look like follows:
+
+```sh
+agera new com.q.a
+```
