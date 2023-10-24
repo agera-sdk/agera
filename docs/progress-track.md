@@ -57,7 +57,7 @@ File API.
   - [x] Browser
 - [ ] `file.create_directory()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.create_directory_async()`
   - [ ] Native
   - [ ] Browser
@@ -137,9 +137,10 @@ File API.
   - [ ] Browser
 - [ ] File streaming read and write for supported platforms
 
-Support `FilePickerFile`, an alternative to `File` that complies with the Web File API, providing only asynchronous operations.
+Support `FileReference`, an alternative to `File` that complies with the Web File API, providing only asynchronous operations, used by file pickers more generally.
 
-- [ ] `FilePickerFile`
+- [ ] `FileReference`
+- [ ] File picker functions
 
 ## agera::display
 

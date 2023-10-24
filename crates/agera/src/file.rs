@@ -21,8 +21,8 @@ pub(crate) mod target;
 /// * Synchronous operations are supported on all platforms except for the browser.
 /// Synchronous operations are expected to panic when running in the browser.
 /// * The `file:` scheme is not supported in the browser. If it is required
-/// for the application to pick user files or directories, use
-/// `FilePickerFile` instead of `File`.
+/// for the application to pick user files or directories, consider using
+/// file pickers and thus `FileReference`.
 ///
 #[derive(Clone, PartialEq)]
 pub struct File {
