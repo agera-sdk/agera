@@ -385,11 +385,11 @@ pub(crate) fn application_directory() -> String {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
                 path.join("install").to_string_lossy().into_owned()
-            } else if #[cfg(target_os = "windows")] {
-                dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
                 if cfg!(debug_assertions) {
                     std::env::current_dir().unwrap().to_str().unwrap().into()
+                } else if #[cfg(target_os = "windows")] {
+                    dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
                 } else {
                     dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned()
                 }
@@ -407,11 +407,11 @@ pub(crate) fn application_storage_directory() -> String {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
                 path.join("storage").to_string_lossy().into_owned()
-            } else if #[cfg(target_os = "android")] {
-                dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
                 if cfg!(debug_assertions) {
                     std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
+                } else if #[cfg(target_os = "windows")] {
+                    dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
                 } else {
                     dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned()
                 }
