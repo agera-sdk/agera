@@ -101,41 +101,41 @@ File API.
   - [x] Browser
 - [ ] `file.delete_file()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.delete_file_async()`
   - [ ] Native
-  - [ ] Browser
-- [ ] `file.rename()`
+  - [x] Browser
+- [ ] `file.move_to()`
   - [ ] Native
-  - [ ] Browser
-- [ ] `file.rename_async()`
+  - [x] Browser
+- [ ] `file.move_to_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.write()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.write_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.creation_date()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.creation_date_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.modification_date()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.modification_date_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.size()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.size_async()`
   - [ ] Native
-  - [ ] Browser
-- [ ] File streaming read and write for supported platforms
+  - [x] Browser
+- [ ] File streaming read and write (not a priority for now)
 
 Support `FileReference`, an alternative to `File` that complies with the Web File API, providing only asynchronous operations, used by file pickers more generally.
 

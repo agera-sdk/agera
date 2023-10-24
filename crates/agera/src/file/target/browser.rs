@@ -30,6 +30,18 @@ extern "C" {
 
     #[wasm_bindgen(catch, js_name = deleteDirectoryAllAsync)]
     async fn js_delete_directory_all_async(parent_path: String, name: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = deleteFileAsync)]
+    async fn js_delete_file_async(parent_path: String, name: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = writeAsync)]
+    async fn js_write_async(path: String, data: JsValue) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = modificationEpochMillisecondsAsync)]
+    async fn js_modification_epoch_milliseconds_async(path: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = sizeAsync)]
+    async fn js_size_async(path: String) -> Result<JsValue, JsValue>;
 }
 
 pub fn within_application_directory(path: &str) -> String {
@@ -83,6 +95,29 @@ pub async fn delete_empty_directory_async(parent_path: String, name: String) -> 
 
 pub async fn delete_directory_all_async(parent_path: String, name: String) -> io::Result<()> {
     js_delete_directory_all_async(parent_path, name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
+}
+
+pub async fn delete_file_async(parent_path: String, name: String) -> io::Result<()> {
+    js_delete_file_async(parent_path, name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
+}
+
+pub async fn write_async(path: String, data: &[u8]) -> io::Result<()> {
+    let uint8array = js_sys::Uint8Array::from(data);
+    js_write_async(path, uint8array.buffer().into()).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
+}
+
+pub async fn modification_date_async(path: String) -> io::Result<Option<std::time::SystemTime>> {
+    let ms = js_modification_epoch_milliseconds_async(path).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+    if ms.is_undefined() {
+        return Ok(None);
+    }
+    let ms: u64 = unsafe { ms.as_f64().unwrap().to_int_unchecked() };
+    Ok(Some(std::time::SystemTime::UNIX_EPOCH + std::time::Duration::from_millis(ms)))
+}
+
+pub async fn size_async(path: String) -> io::Result<usize> {
+    let size = js_size_async(path).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+    Ok(unsafe { size.as_f64().unwrap().to_int_unchecked() })
 }
 
 fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {

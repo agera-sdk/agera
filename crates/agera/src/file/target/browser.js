@@ -110,12 +110,64 @@ export async function deleteDirectoryAllAsync(parentPath, name) {
     }
 }
 
+export async function deleteFileAsync(parentPath, name) {
+    const parentHandle = await getDirectoryHandleAsync(parentPath);
+    try {
+        await parentHandle.getFileHandle(name);
+        await parentHandle.removeEntry(name);
+    } catch(error) {
+        throw transformError(error);
+    }
+}
+
+export async function writeAsync(path, data) {
+    const handle = await getFileHandleAsync(path);
+    try {
+        const handle2 = await handle.getSyncAccessHandle();
+        handle2.write(data);
+        handle2.close();
+    } catch (error) {
+        throw transformError(error);
+    }
+}
+
+export async function modificationEpochMillisecondsAsync(path) {
+    try {
+        await getDirectoryHandleAsync(path);
+        return undefined;
+    } catch (error) {
+        if (error != errorConstants.TypeMismatchError) {
+            throw error;
+        }
+    }
+    const handle = await getFileHandleAsync(path);
+    try {
+        const file = await handle.getFile();
+        const lastModified = file.lastModified;
+        return lastModified;
+    } catch (error) {
+        throw transformError(error);
+    }
+}
+
+export async function sizeAsync(path) {
+    const handle1 = await getFileHandleAsync(path);
+    try {
+        const handle2 = await handle1.createSyncAccessHandle()();
+        const size = handle2.getSize();
+        handle2.close();
+        return size;
+    } catch (error) {
+        throw transformError(error);
+    }
+}
+
 /**
  * @throws {number} An error constant.
  */
 async function getFileHandleAsync(path) {
     try {
-        let dirHandle = navigator.storage.getDirectory().await;
+        let dirHandle = await navigator.storage.getDirectory();
         const dirSegments = path.split('/');
         const fileSegment = dirSegments.pop();
         for (const segment of dirSegments) {
@@ -143,7 +195,7 @@ async function getFileHandleAsync(path) {
  */
 async function getDirectoryHandleAsync(path, create = false) {
     try {
-        let handle = navigator.storage.getDirectory().await;
+        let handle = await navigator.storage.getDirectory();
         const segments = path.split('/');
         for (const segment of segments) {
             if (segment.length === 0) {

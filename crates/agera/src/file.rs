@@ -112,7 +112,7 @@ impl File {
         })
     }
 
-    /// Returns the native path of the file.
+    /// Returns the native path of the file, if it has the scheme `file:`.
     pub fn native_path(&self) -> Option<String> {
         if self.scheme == FileScheme::File { Some(self.path.clone()) } else { None }
     }
@@ -292,6 +292,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
+            let _ = location;
             unsupported_browser_sync_operation!();
         }}
     }
@@ -311,7 +312,7 @@ impl File {
         }}
         if_browser_target! {{
             let _ = location;
-            panic!("Operation not supported in the browser");
+            unsupported_browser_operation!();
         }}
     }
 
@@ -509,6 +510,183 @@ impl File {
             target::browser::delete_directory_all_async(parent_path, base_name).await
         }}
     }
+
+    /// Deletes a file synchronously.
+    pub fn delete_file(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Deletes a file asynchronously.
+    pub async fn delete_file_async(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let flex_path = self.flex_path();
+            let base_name = flex_path.base_name();
+            let mut parent_path = flex_path.resolve("..").to_string();
+            match self.scheme {
+                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
+                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::delete_file_async(parent_path, base_name).await
+        }}
+    }
+
+    /// Moves a file or directory to a new path `to_path`, synchronously. This method overrides
+    /// any file contents present at the path `to_path`.
+    pub fn move_to(&self, to_path: &File) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let _ = to_path;
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Moves a file or directory to a new path `to_path`, asynchronously. This method overrides
+    /// any file contents present at the path `to_path`.
+    /// 
+    /// # Browser support
+    /// 
+    /// This operation is currently not supported in the browser
+    /// and thus should panic.
+    ///
+    pub async fn move_to_async(&self, to_path: &File) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let _ = to_path;
+            unsupported_browser_operation!();
+        }}
+    }
+
+    /// Writes data to a file synchronously.
+    pub fn write<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let _ = data;
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Writes data to a file asynchronously.
+    pub async fn write_async<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::write_async(path, data.as_ref()).await
+        }}
+    }
+
+    /// The creation date of a file or directory. This method returns synchronously.
+    pub fn creation_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// The creation date of a file or directory.
+    /// This method returns asynchronously.
+    /// 
+    /// # Browser support
+    /// 
+    /// This method is not supported in the browser, thus returning always
+    /// `Ok(None)`.
+    /// 
+    pub async fn creation_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            Ok(None)
+        }}
+    }
+
+    /// The modification date of a file or directory. This method
+    /// returns synchronously.
+    pub fn modification_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// The modification date of a file or directory.
+    /// This method returns asynchronously.
+    /// 
+    /// # Browser support
+    /// 
+    /// In the browser, this method returns `Ok(None)` for directories.
+    /// 
+    pub async fn modification_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::modification_date_async(path).await
+        }}
+    }
+
+    /// The size of a file. This method returns synchronously.
+    pub fn size(&self) -> std::io::Result<usize> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// The size of a file. This method returns asynchronously.
+    pub async fn size_async(&self) -> std::io::Result<usize> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::size_async(path).await
+        }}
+    }
+}
+
+macro unsupported_browser_operation {
+    () => {
+        panic!("Operation not supported in the browser");
+    },
 }
 
 macro unsupported_browser_sync_operation {
@@ -560,7 +738,7 @@ pub async fn __agera_File_bootstrap() {
     }
 }
 
-pub(crate) fn application_directory() -> String {
+fn application_directory() -> String {
     if_native_target! {{
         cfg_if! {
             if #[cfg(target_os = "android")] {
@@ -582,7 +760,7 @@ pub(crate) fn application_directory() -> String {
     }}
 }
 
-pub(crate) fn application_storage_directory() -> String {
+fn application_storage_directory() -> String {
     if_native_target! {{
         cfg_if! {
             if #[cfg(target_os = "android")] {
