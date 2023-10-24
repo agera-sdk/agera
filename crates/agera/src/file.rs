@@ -683,18 +683,21 @@ impl File {
     }
 }
 
+#[allow(unused)]
 macro unsupported_browser_operation {
     () => {
         panic!("Operation not supported in the browser");
     },
 }
 
+#[allow(unused)]
 macro unsupported_browser_sync_operation {
     () => {
         panic!("Browser does not support synchronous file operations");
     },
 }
 
+#[allow(unused)]
 macro unsupported_browser_filescheme_operation {
     () => {
         panic!("Browser does not support the 'file:' scheme");
@@ -766,14 +769,12 @@ fn application_storage_directory() -> String {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
                 path.join("storage").to_string_lossy().into_owned()
+            } else if #[cfg(debug_assertions)] {
+                std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
+            } else if #[cfg(target_os = "windows")] {
+                dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
-                if cfg!(debug_assertions) {
-                    std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
-                } else if #[cfg(target_os = "windows")] {
-                    dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
-                } else {
-                    dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned()
-                }
+                dirs::data_dir().unwrap().join(&crate::application::id()).join("storage").to_string_lossy().into_owned()
             }
         }
     }}

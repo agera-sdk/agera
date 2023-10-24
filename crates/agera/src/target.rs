@@ -33,7 +33,10 @@ The following items are available when building for the browser:
 - `agera::target::js` — Alias to the `js_sys` crate.
 */
 
+#[allow(unused)]
 use crate::common::*;
+
+#[allow(unused)]
 use std::sync::RwLock;
 
 /// Expands an item solely if the build target is a native platform.
@@ -64,6 +67,7 @@ pub macro if_browser_target {
     },
 }
 
+#[allow(unused)]
 pub(crate) macro unsupported_platform {
     () => {
         panic!("Unsupported platform");
