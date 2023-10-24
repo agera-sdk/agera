@@ -80,13 +80,13 @@ File API.
   - [ ] Native
   - [x] Browser
 - [ ] `file.directory_listing()`
-  - Guarantee that returned `File`s conform to the same scheme. In native targets, for `app:` and `app-storage:`, *do not* resolve symbolic links and relativize the physical path of the scheme to the directory path and add the item's name.
+  - Guarantee that returned `File`s conform to the same scheme. In native targets, yield listings as `directory.resolve_path(item_name)` where `item_name` is `std::path::Path::new(item_path).file_name()`.
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.directory_listing_async()`
   - Guarantee that returned `File`s conform to the same scheme, similiar to `directory_listing()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.delete_directory_if_empty()`
   - [ ] Native
   - [ ] Browser

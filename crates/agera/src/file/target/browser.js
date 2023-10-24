@@ -76,6 +76,19 @@ export async function readBytesAsync(path) {
     }
 }
 
+export async function directoryListingAsync(path) {
+    const handle = await getDirectoryHandleAsync(path);
+    const listing = [];
+    try {
+        for await (const key of handle.keys()) {
+            listing.push(key);
+        }
+    } catch (error) {
+        return transformError(error);
+    }
+    return listing;
+}
+
 /**
  * @throws {number} An error constant.
  */

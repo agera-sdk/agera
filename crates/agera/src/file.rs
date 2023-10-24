@@ -2,7 +2,7 @@
 File API.
 */
 
-use crate::{common::*, target::{if_native_target, unsupported_platform, if_browser_target}};
+use crate::{common::*, target::{if_native_target, if_browser_target}};
 use file_paths::*;
 
 pub(crate) mod target;
@@ -331,8 +331,15 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let fp = self.flex_path();
-            target::browser::create_directory_async(fp.resolve("..").to_string(), fp.base_name()).await
+            let flex_path = self.flex_path();
+            let base_name = flex_path.base_name();
+            let mut parent_path = flex_path.resolve("..").to_string();
+            match self.scheme {
+                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
+                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::create_directory_async(parent_path, base_name).await
         }}
     }
 
@@ -352,7 +359,13 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            target::browser::create_directory_all_async(self.path.clone()).await
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::create_directory_all_async(path).await
         }}
     }
 
@@ -372,7 +385,13 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            target::browser::read_bytes_async(self.path.clone()).await
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::read_bytes_async(path).await
         }}
     }
 
@@ -392,7 +411,46 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            target::browser::read_utf8_async(self.path.clone()).await
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::read_utf8_async(path).await
+        }}
+    }
+
+    /// Returns the listing of directories and files in a directory,
+    /// synchronously.
+    pub fn directory_listing(&self) -> std::io::Result<File> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Returns the listing of directories and files in a directory,
+    /// asynchronously.
+    pub async fn directory_listing_async(&self) -> std::io::Result<Vec<File>> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let mut path = self.path.clone();
+            match self.scheme {
+                FileScheme::App => { path = target::browser::within_application_directory(&path); },
+                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            let listing_1 = target::browser::directory_listing_async(path).await?;
+            let mut listing_2 = vec![];
+            for name in listing_1 {
+                listing_2.push(self.resolve_path(&name));
+            }
+            Ok(listing_2)
         }}
     }
 }
@@ -400,6 +458,12 @@ impl File {
 macro unsupported_browser_sync_operation {
     () => {
         panic!("Browser does not support synchronous file operations");
+    },
+}
+
+macro unsupported_browser_filescheme_operation {
+    () => {
+        panic!("Browser does not support the 'file:' scheme");
     },
 }
 
