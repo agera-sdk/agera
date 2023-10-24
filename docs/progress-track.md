@@ -172,9 +172,9 @@ use agera::display::*;
 struct CustomDisplayObject(Entity);
 
 impl CustomDisplayObject {
-  fn new() {
-    Self(DisplayObject::new().into())
-  }
+    fn new() {
+        Self(DisplayObject::new().into())
+    }
 }
 
 impl DisplayObjectDelegate for CustomDisplayObject {
