@@ -3,7 +3,9 @@ const errorConstants = {
     "TypeMismatchError": 1,
     "NotAllowedError": 2,
     // Error thrown when a segment contains invalid characters.
-    "TypeError": 3
+    "TypeError": 3,
+    "InvalidStateError": 4,
+    "NoModificationAllowedError": 5,
 };
 
 export async function existsAsync(path) {
@@ -59,6 +61,19 @@ export async function createDirectoryAsync(parentPath, name) {
 
 export async function createDirectoryAllAsync(path) {
     await getDirectoryHandleAsync(path, true);
+}
+
+export async function readBytesAsync(path) {
+    const handle1 = await getFileHandleAsync(path);
+    try {
+        const handle2 = await handle1.getSyncAccessHandle();
+        const data = new Uint8Array(handle2.getSize());
+        handle2.read(data);
+        handle2.close();
+        return data;
+    } catch (error) {
+        throw transformError(error);
+    }
 }
 
 /**

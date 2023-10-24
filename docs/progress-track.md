@@ -69,16 +69,16 @@ File API.
   - [x] Browser
 - [ ] `file.read_bytes()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.read_bytes_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.read_utf8()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.read_utf8_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.directory_listing()`
   - Guarantee that returned `File`s conform to the same scheme. In native targets, for `app:` and `app-storage:`, *do not* resolve symbolic links and relativize the physical path of the scheme to the directory path and add the item's name.
   - [ ] Native

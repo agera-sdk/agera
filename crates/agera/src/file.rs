@@ -332,7 +332,7 @@ impl File {
         }}
         if_browser_target! {{
             let fp = self.flex_path();
-            target::browser::create_directory(fp.resolve("..").to_string(), fp.base_name()).await
+            target::browser::create_directory_async(fp.resolve("..").to_string(), fp.base_name()).await
         }}
     }
 
@@ -352,8 +352,47 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let fp = self.flex_path();
-            target::browser::create_directory_all(self.path.clone()).await
+            target::browser::create_directory_all_async(self.path.clone()).await
+        }}
+    }
+
+    /// Reads the bytes from a file synchronously.
+    pub fn read_bytes(&self) -> std::io::Result<Bytes> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Reads the bytes from a file asynchronously.
+    pub async fn read_bytes_async(&self) -> std::io::Result<Bytes> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            target::browser::read_bytes_async(self.path.clone()).await
+        }}
+    }
+
+    /// Reads an UTF-8 string from a file synchronously.
+    pub fn read_utf8(&self) -> std::io::Result<Bytes> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Reads an UTF-8 string from a file asynchronously.
+    pub async fn read_utf8_async(&self) -> std::io::Result<String> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            target::browser::read_utf8_async(self.path.clone()).await
         }}
     }
 }
