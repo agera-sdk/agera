@@ -22,6 +22,7 @@ and operations such as measurement of object bounds.
 */
 
 #![feature(decl_macro)]
+#![feature(io_error_more)]
 
 pub mod application;
 pub mod common;

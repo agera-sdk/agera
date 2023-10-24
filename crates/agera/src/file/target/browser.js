@@ -48,6 +48,19 @@ export async function isFileAsync(path) {
     }
 }
 
+export async function createDirectoryAsync(parentPath, name) {
+    const directory = await getDirectoryHandleAsync(parentPath);
+    try {
+        await directory.getDirectoryHandle(name, { create: true });
+    } catch (error) {
+        throw transformError(e);
+    }
+}
+
+export async function createDirectoryAllAsync(path) {
+    await getDirectoryHandleAsync(path, true);
+}
+
 /**
  * @throws {number} An error constant.
  */

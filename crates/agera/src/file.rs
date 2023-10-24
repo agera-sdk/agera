@@ -315,7 +315,7 @@ impl File {
         }}
     }
 
-    /// Creates a directory synchronously.
+    /// Creates an empty directory synchronously.
     pub fn create_directory(&self) -> std::io::Result<()> {
         if_native_target! {{
             must_write_here_yet;
@@ -325,13 +325,35 @@ impl File {
         }}
     }
 
-    /// Creates a directory asynchronously.
+    /// Creates an empty directory asynchronously.
     pub async fn create_directory_async(&self) -> std::io::Result<()> {
         if_native_target! {{
             must_write_here_yet;
         }}
         if_browser_target! {{
+            let fp = self.flex_path();
+            target::browser::create_directory(fp.resolve("..").to_string(), fp.base_name()).await
+        }}
+    }
+
+    /// Creates a directory and its parent directories synchronously.
+    pub fn create_directory_all(&self) -> std::io::Result<()> {
+        if_native_target! {{
             must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Creates a directory and its parent directories asynchronously.
+    pub async fn create_directory_all_async(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let fp = self.flex_path();
+            target::browser::create_directory_all(self.path.clone()).await
         }}
     }
 }

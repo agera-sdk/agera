@@ -60,13 +60,13 @@ File API.
   - [x] Browser
 - [ ] `file.create_directory_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.create_directory_all()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.create_directory_all_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.read_bytes()`
   - [ ] Native
   - [ ] Browser
