@@ -163,13 +163,19 @@ let entity: Entity = object.into();;
 let object = DisplayObject::try_from(entity.as_entity());
 ```
 
-Types for display objects are built by implementing `DisplayObjectDelegate`, thus inheriting necessary methods to quickly work with display objects:
+Types for display objects are built by implementing `DisplayObjectDelegate`, thus inheriting necessary methods to quickly work with display objects.
 
 ```rust
 use agera::common::*;
 use agera::display::*;
 
 struct CustomDisplayObject(Entity);
+
+impl CustomDisplayObject {
+  fn new() {
+    Self(DisplayObject::new().into())
+  }
+}
 
 impl DisplayObjectDelegate for CustomDisplayObject {
     fn delegate(&self) -> Entity {

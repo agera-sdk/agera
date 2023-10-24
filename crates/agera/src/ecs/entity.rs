@@ -75,11 +75,12 @@ impl Entity {
     }
 
     /// Overrides a component of the entity.
-    pub fn set<T>(&self, value: T)
+    pub fn set<T>(&self, value: T) -> Self
         where T: Any + Send + Sync
     {
         self.delete::<T>();
         self.inner.components.write().unwrap().push(Arc::new(value));
+        self.clone()
     }
 
     /// Deletes a component of the entity.
