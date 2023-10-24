@@ -25,7 +25,6 @@ are internally used:
 - [wasm_bindgen](https://rustwasm.github.io/wasm-bindgen/)
 - [wasm-bindgen-futures](https://crates.io/crates/wasm-bindgen-futures)
 - [js-sys](https://crates.io/crates/js-sys)
-- [web-sys](https://crates.io/crates/web-sys)
 
 The following items are available when building for the browser:
 
@@ -94,5 +93,4 @@ if_browser_target! {
     pub use wasm_bindgen as js_bindings;
     pub use wasm_bindgen_futures as js_futures;
     pub use js_sys as js;
-    pub(crate) use web_sys as web;
 }

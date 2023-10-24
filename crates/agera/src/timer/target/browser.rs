@@ -16,10 +16,12 @@ extern "C" {
     #[wasm_bindgen(js_name = waitInJSPromise)]
     fn wait_in_js_promise(ms: f64) -> js_sys::Promise;
 
+    /*
     #[wasm_bindgen(js_name = nonAnimationTicker)]
     fn non_animation_interval(closure: &Closure<dyn FnMut(f64)>, ms: f64) -> web_sys::AbortController;
     #[wasm_bindgen(js_name = animationTicker)]
     fn animation_interval(closure: &Closure<dyn FnMut(f64)>, ms: f64) -> web_sys::AbortController;
+    */
 
     // JSTicker
 

@@ -7,6 +7,7 @@ pub use ::serde as ser;
 pub use ::serde_json as json;
 pub use ::lazy_regex as regex;
 pub use ::chrono as temporal;
+pub use ::file_paths as paths;
 
 pub mod event_emitter;
 pub mod future;

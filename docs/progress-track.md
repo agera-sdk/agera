@@ -18,30 +18,43 @@
 File API.
 
 - [x] Access to various directories, including user directories
+- [ ] For the browser, in `bootstrap.rs`, embed all installation files by writing them using `File` from the crate; in this case, the files are copied to a directory near `bootstrap.rs` and included by `bootstrap.rs` using `include_bytes!`.
 - [ ] `file.exists()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
+- [ ] `file.exists_async()`
+  - [ ] Native
+  - [x] Browser
 - [ ] `file.is_directory()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
+- [ ] `file.is_directory_async()`
+  - [ ] Native
+  - [x] Browser
 - [ ] `file.is_file()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
+- [ ] `file.is_file_async()`
+  - [ ] Native
+  - [x] Browser
 - [ ] `file.is_symbolic_link()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
+- [ ] `file.is_symbolic_link_async()`
+  - [ ] Native
+  - [x] Browser
 - [ ] `file.canonicalize()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.canonicalize_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.copy_to()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.copy_to_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.create_directory()`
   - [ ] Native
   - [ ] Browser
@@ -67,7 +80,7 @@ File API.
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing()`
-  - Guarantee that returned `File`s conform to the same scheme. In native targets, for `app:` and `app-storage:`, *do not* resolve symbolic links and relativize the physical path of the scheme to the item path.
+  - Guarantee that returned `File`s conform to the same scheme. In native targets, for `app:` and `app-storage:`, *do not* resolve symbolic links and relativize the physical path of the scheme to the directory path and add the item's name.
   - [ ] Native
   - [ ] Browser
 - [ ] `file.directory_listing_async()`
@@ -122,6 +135,11 @@ File API.
 - [ ] `file.size_async()`
   - [ ] Native
   - [ ] Browser
+- [ ] File streaming read and write for supported platforms
+
+Support `FilePickerFile`, an alternative to `File` that complies with the Web File API, providing only asynchronous operations.
+
+- [ ] `FilePickerFile`
 
 ## agera::display
 

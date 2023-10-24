@@ -15,10 +15,10 @@ pub macro start {
     ($start_action:expr) => {
         async fn __boostrap() {
             // Bootstrap
-            include!(concat!(env!("OUT_DIR"), "/agera_sdk_build/bootstrap.rs"));
+            include!(concat!(env!("OUT_DIR"), "/agera_sdk_build/bootstrap.rs")).await;
             
             // Setup file directories
-            ::agera::file::__agera_File_bootstrap();
+            ::agera::file::__agera_File_bootstrap().await;
 
             // Start
             $start_action.await;
