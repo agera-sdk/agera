@@ -6,6 +6,7 @@ const errorConstants = {
     "TypeError": 3,
     "InvalidStateError": 4,
     "NoModificationAllowedError": 5,
+    "InvalidModificationError": 6,
 };
 
 export async function existsAsync(path) {
@@ -87,6 +88,26 @@ export async function directoryListingAsync(path) {
         return transformError(error);
     }
     return listing;
+}
+
+export async function deleteEmptyDirectoryAsync(parentPath, name) {
+    const parentHandle = await getDirectoryHandleAsync(parentPath);
+    try {
+        await parentHandle.getDirectoryHandle(name);
+        await parentHandle.removeEntry(name);
+    } catch(error) {
+        throw transformError(error);
+    }
+}
+
+export async function deleteDirectoryAllAsync(parentPath, name) {
+    const parentHandle = await getDirectoryHandleAsync(parentPath);
+    try {
+        await parentHandle.getDirectoryHandle(name);
+        await parentHandle.removeEntry(name, { recursive: true });
+    } catch(error) {
+        throw transformError(error);
+    }
 }
 
 /**

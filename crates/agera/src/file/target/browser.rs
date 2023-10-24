@@ -24,6 +24,12 @@ extern "C" {
 
     #[wasm_bindgen(catch, js_name = directoryListingAsync)]
     async fn js_directory_listing_async(path: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = deleteEmptyDirectoryAsync)]
+    async fn js_delete_empty_directory_async(parent_path: String, name: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, js_name = deleteDirectoryAllAsync)]
+    async fn js_delete_directory_all_async(parent_path: String, name: String) -> Result<JsValue, JsValue>;
 }
 
 pub fn within_application_directory(path: &str) -> String {
@@ -71,6 +77,14 @@ pub async fn directory_listing_async(path: String) -> io::Result<Vec<String>> {
     Ok(listing2)
 }
 
+pub async fn delete_empty_directory_async(parent_path: String, name: String) -> io::Result<()> {
+    js_delete_empty_directory_async(parent_path, name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
+}
+
+pub async fn delete_directory_all_async(parent_path: String, name: String) -> io::Result<()> {
+    js_delete_directory_all_async(parent_path, name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
+}
+
 fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {
     let error = error.as_f64().unwrap();
     if error == 0.0 {
@@ -89,5 +103,14 @@ fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {
         io::Error::new(io::ErrorKind::Other, "Invalidated origin private file system state")
     } else {
         io::Error::new(io::ErrorKind::Other, "Unknown error")
+    }
+}
+
+fn js_io_error_to_rs_io_error_for_delete_directory(js_error: JsValue) -> io::Error {
+    let error = js_error.as_f64().unwrap();
+    if error == 6.0 {
+        io::Error::new(io::ErrorKind::DirectoryNotEmpty, "Directory not empty")
+    } else {
+        js_io_error_to_rs_io_error(js_error, true)
     }
 }

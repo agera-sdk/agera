@@ -453,6 +453,62 @@ impl File {
             Ok(listing_2)
         }}
     }
+
+    /// Deletes an empty directory synchronously.
+    pub fn delete_empty_directory(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Deletes an empty directory asynchronously.
+    pub async fn delete_empty_directory_async(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let flex_path = self.flex_path();
+            let base_name = flex_path.base_name();
+            let mut parent_path = flex_path.resolve("..").to_string();
+            match self.scheme {
+                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
+                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::delete_empty_directory_async(parent_path, base_name).await
+        }}
+    }
+
+    /// Deletes a directory recursively synchronously.
+    pub fn delete_directory_all(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            unsupported_browser_sync_operation!();
+        }}
+    }
+
+    /// Deletes a directory recursively asynchronously.
+    pub async fn delete_directory_all_async(&self) -> std::io::Result<()> {
+        if_native_target! {{
+            must_write_here_yet;
+        }}
+        if_browser_target! {{
+            let flex_path = self.flex_path();
+            let base_name = flex_path.base_name();
+            let mut parent_path = flex_path.resolve("..").to_string();
+            match self.scheme {
+                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
+                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
+                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
+            }
+            target::browser::delete_directory_all_async(parent_path, base_name).await
+        }}
+    }
 }
 
 macro unsupported_browser_sync_operation {

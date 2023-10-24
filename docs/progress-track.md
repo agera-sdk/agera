@@ -87,18 +87,18 @@ File API.
   - Guarantee that returned `File`s conform to the same scheme, similiar to `directory_listing()`
   - [ ] Native
   - [x] Browser
-- [ ] `file.delete_directory_if_empty()`
+- [ ] `file.delete_empty_directory()`
   - [ ] Native
-  - [ ] Browser
-- [ ] `file.delete_directory_if_empty_async()`
+  - [x] Browser
+- [ ] `file.delete_empty_directory_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.delete_directory_all()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.delete_directory_all_async()`
   - [ ] Native
-  - [ ] Browser
+  - [x] Browser
 - [ ] `file.delete_file()`
   - [ ] Native
   - [ ] Browser
