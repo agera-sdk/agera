@@ -1,5 +1,9 @@
 /*!
-Minor utilities.
+Utilities for the Rust language.
+
+Items in this module are in general re-exported from other crates.
+Most of `agera::util` is re-exported in `agera::common`, reducing
+the need of importing them explicitly.
 */
 
 pub use ::bytes as bytes;
