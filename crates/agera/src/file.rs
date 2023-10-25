@@ -13,7 +13,7 @@ pub(crate) mod target;
 /// 
 /// The following URIs are supported:
 /// 
-/// * `file:` — A file located in the regular file system.
+/// * `file:` — A file located in the native file system.
 /// * `app:` — A file located in the application installation directory.
 /// * `app-storage:` — A file located in the application storage directory.
 /// 
@@ -35,6 +35,12 @@ impl File {
     /// Creates a file with a specified native path or URI.
     /// `path_or_uri` is treated as an URI if it starts with either
     /// `file:`, `app:` or `app-storage:`.
+    /// 
+    /// If this constructor is given a non URI, it is taken as a
+    /// `file:` native path. If that native path is not absolute,
+    /// this native path is reassigned as the current working directory
+    /// resolved to that native path.
+    ///
     pub fn new(path_or_uri: &str) -> File {
         if path_or_uri.starts_with("file:") {
             File {
@@ -164,7 +170,7 @@ impl File {
     /// 
     /// let file_1 = File::new("file:///C:/Users/John/Documents/foo.svg");
     /// let file_2 = File::new("file:///C:/Users/John/Documents/bar.svg");
-    /// assert_eq!("../bar.svg", file_1.relative(file_2));
+    /// assert_eq!("../bar.svg", file_1.relative(&file_2));
     /// ```
     ///
     pub fn relative(&self, other: &File) -> String {
