@@ -39,7 +39,7 @@ impl File {
         if path_or_uri.starts_with("file:") {
             File {
                 scheme: FileScheme::File,
-                path: FlexPath::new_native(&uri_to_native_path(path_or_uri)).to_string(),
+                path: File::current_directory().resolve_path(&uri_to_native_path(path_or_uri)).path,
             }
         } else if path_or_uri.starts_with("app:") {
             let path = regex_replace!(r"^/{0,2}", &decode_uri(&path_or_uri[4..]), |_| "/".to_owned()).into_owned();
@@ -56,9 +56,27 @@ impl File {
         } else {
             File {
                 scheme: FileScheme::File,
-                path: FlexPath::new_native(path_or_uri).to_string(),
+                path: File::current_directory().resolve_path(path_or_uri).path,
             }
         }
+    }
+
+    /// The current working directory. The result of this function is non-constant.
+    /// 
+    /// # Browser support
+    /// 
+    /// This function is not supported in the browser and may thus panic.
+    /// 
+    pub fn current_directory() -> File {
+        if_native_target! {{
+            Self {
+                scheme: FileScheme::File,
+                path: std::env::current_dir().unwrap().to_string_lossy().into_owned(),
+            }
+        }}
+        if_browser_target! {{
+            unsupported_browser_operation!();
+        }}
     }
 
     /// The application's installation directory. The result of this function is equivalent
@@ -187,6 +205,12 @@ impl File {
     }
 
     /// Indicates whether a file or directory exists, synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn exists(&self) -> bool {
         if_native_target! {{
             Path::new(&self.path_omega()).exists()
@@ -207,6 +231,12 @@ impl File {
     }
 
     /// Indicates whether the `File` object is a directory, synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn is_directory(&self) -> bool {
         if_native_target! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_dir()).unwrap_or(false)
@@ -227,6 +257,12 @@ impl File {
     }
 
     /// Indicates whether the `File` object is a file, synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn is_file(&self) -> bool {
         if_native_target! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_file()).unwrap_or(false)
@@ -247,6 +283,12 @@ impl File {
     }
 
     /// Indicates whether the `File` object is a symbolic link, synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn is_symbolic_link(&self) -> bool {
         if_native_target! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_symlink()).unwrap_or(false)
@@ -269,13 +311,18 @@ impl File {
     /// Canonicalizes the file path, synchronously.
     /// For non `file:` schemes, this returns the same path.
     ///
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn canonicalize(&self) -> File {
         if_native_target! {{
             if self.scheme != FileScheme::File {
                 return self.clone();
             }
-            if let Some(result) = Path::new(&self.path_omega()).canonicalize().ok().and_then(|result| result.to_str()) {
-                return File { scheme: FileScheme::File, path: result.to_owned() };
+            if let Some(result) = Path::new(&self.path_omega()).canonicalize().ok().map(|result| result.to_string_lossy().into_owned()) {
+                return File { scheme: FileScheme::File, path: result };
             }
             return self.clone();
         }}
@@ -301,13 +348,18 @@ impl File {
         }}
     }
 
-    /// Copies a file or directory to another path specified by
-    /// `location`, overriding any contents at `location`.
-    /// This is a synchronous operation.
+    /// Copies a file to another path specified by `location`,
+    /// overriding any contents at `location`. This is a synchronous operation.
+    /// 
+    /// # Browser support
     ///
-    pub fn copy_to(&self, location: &File) -> std::io::Result<()> {
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
+    pub fn copy_file_contents_to(&self, location: &File) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::copy(&self.path_omega(), &location.path_omega())?;
+            Ok(())
         }}
         if_browser_target! {{
             let _ = location;
@@ -315,18 +367,18 @@ impl File {
         }}
     }
 
-    /// Copies a file or directory to another path specified by
-    /// `location`, overriding any contents at `location`.
-    /// This is an asynchronous operation.
+    /// Copies a file to another path specified by `location`,
+    /// overriding any contents at `location`. This is an asynchronous operation.
     /// 
     /// # Browser support
     /// 
     /// This operation is currently not supported in the browser
     /// and thus should panic.
     ///
-    pub async fn copy_to_async(&self, location: &File) -> std::io::Result<()> {
+    pub async fn copy_file_contents_to_async(&self, location: &File) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::copy(&self.path_omega(), &location.path_omega()).await?;
+            Ok(())
         }}
         if_browser_target! {{
             let _ = location;
@@ -335,9 +387,15 @@ impl File {
     }
 
     /// Creates an empty directory synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn create_directory(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::create_dir(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -347,7 +405,7 @@ impl File {
     /// Creates an empty directory asynchronously.
     pub async fn create_directory_async(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::create_dir(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::create_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
@@ -355,9 +413,15 @@ impl File {
     }
 
     /// Creates a directory and its parent directories synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn create_directory_all(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::create_dir_all(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -367,7 +431,7 @@ impl File {
     /// Creates a directory and its parent directories asynchronously.
     pub async fn create_directory_all_async(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::create_dir_all(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::create_directory_all_async(self.path_omega()).await
@@ -375,9 +439,15 @@ impl File {
     }
 
     /// Reads the bytes from a file synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn read_bytes(&self) -> std::io::Result<Bytes> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::read(&self.path_omega()).map(|data| Bytes::from(data))
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -387,7 +457,7 @@ impl File {
     /// Reads the bytes from a file asynchronously.
     pub async fn read_bytes_async(&self) -> std::io::Result<Bytes> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::read(&self.path_omega()).await.map(|data| Bytes::from(data))
         }}
         if_browser_target! {{
             target::browser::read_bytes_async(self.path_omega()).await
@@ -395,9 +465,15 @@ impl File {
     }
 
     /// Reads an UTF-8 string from a file synchronously.
-    pub fn read_utf8(&self) -> std::io::Result<Bytes> {
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
+    pub fn read_utf8(&self) -> std::io::Result<String> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::read_to_string(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -407,29 +483,57 @@ impl File {
     /// Reads an UTF-8 string from a file asynchronously.
     pub async fn read_utf8_async(&self) -> std::io::Result<String> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::read_to_string(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::read_utf8_async(self.path_omega()).await
         }}
     }
 
-    /// Returns the listing of directories and files in a directory,
-    /// synchronously.
-    pub fn directory_listing(&self) -> std::io::Result<File> {
+    /// Returns entries from a directory, synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
+    pub fn directory_listing(&self) -> std::io::Result<Vec<File>> {
         if_native_target! {{
-            must_write_here_yet;
+            let listing_1 = std::fs::read_dir(&self.path_omega())?;
+            let mut listing_2 = vec![];
+            for entry in listing_1 {
+                if entry.is_err() {
+                    continue;
+                }
+                let entry_name = entry.unwrap().file_name();
+                listing_2.push(self.resolve_path(&entry_name.to_string_lossy().into_owned()));
+            }
+            Ok(listing_2)
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
-    /// Returns the listing of directories and files in a directory,
-    /// asynchronously.
+    /// Returns entries from a directory, asynchronously.
     pub async fn directory_listing_async(&self) -> std::io::Result<Vec<File>> {
         if_native_target! {{
-            must_write_here_yet;
+            let mut listing_1 = tokio::fs::read_dir(&self.path_omega()).await?;
+            let mut listing_2 = vec![];
+            loop {
+                let entry = listing_1.next_entry().await;
+                if entry.is_err() {
+                    continue;
+                }
+                let entry = entry.unwrap();
+                if entry.is_none() {
+                    break;
+                }
+                let entry = entry.unwrap();
+                let entry_name = entry.file_name();
+                listing_2.push(self.resolve_path(&entry_name.to_string_lossy().into_owned()));
+            }
+            Ok(listing_2)
         }}
         if_browser_target! {{
             let listing_1 = target::browser::directory_listing_async(self.path_omega()).await?;
@@ -442,9 +546,15 @@ impl File {
     }
 
     /// Deletes an empty directory synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn delete_empty_directory(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::remove_dir(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -454,7 +564,7 @@ impl File {
     /// Deletes an empty directory asynchronously.
     pub async fn delete_empty_directory_async(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::remove_dir(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::delete_empty_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
@@ -462,9 +572,15 @@ impl File {
     }
 
     /// Deletes a directory recursively synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn delete_directory_all(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::remove_dir_all(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -474,7 +590,7 @@ impl File {
     /// Deletes a directory recursively asynchronously.
     pub async fn delete_directory_all_async(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::remove_dir_all(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::delete_directory_all_async(self.parent().path_omega(), self.flex_path().base_name()).await
@@ -482,9 +598,15 @@ impl File {
     }
 
     /// Deletes a file synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
     pub fn delete_file(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::remove_file(&self.path_omega())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -494,47 +616,81 @@ impl File {
     /// Deletes a file asynchronously.
     pub async fn delete_file_async(&self) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::remove_file(&self.path_omega()).await
         }}
         if_browser_target! {{
             target::browser::delete_file_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
-    /// Moves a file or directory to a new path `to_path`, synchronously. This method overrides
-    /// any file contents present at the path `to_path`.
-    pub fn move_to(&self, to_path: &File) -> std::io::Result<()> {
+    /// Moves a file or directory from its existing path to the path `path`, synchronously.
+    /// This method overrides any file contents present at the path `path`.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use agera::file::*;
+    /// 
+    /// // Rename a.txt to b.txt
+    /// let a_txt = File::new("a.txt");
+    /// let b_txt = File::new("b.txt");
+    /// a_txt.move_to(&b_txt)?;
+    /// ```
+    /// 
+    pub fn move_to(&self, path: &File) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::rename(&self.path_omega(), &path.path_omega())
         }}
         if_browser_target! {{
-            let _ = to_path;
+            let _ = path;
             unsupported_browser_sync_operation!();
         }}
     }
 
-    /// Moves a file or directory to a new path `to_path`, asynchronously. This method overrides
-    /// any file contents present at the path `to_path`.
+    /// Moves a file or directory from its existing path to the path `path`, asynchronously.
+    /// This method overrides any file contents present at the path `path`.
     /// 
     /// # Browser support
     /// 
     /// This operation is currently not supported in the browser
     /// and thus should panic.
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use agera::file::*;
+    /// 
+    /// // Rename a.txt to b.txt
+    /// let a_txt = File::new("a.txt");
+    /// let b_txt = File::new("b.txt");
+    /// a_txt.move_to_async(&b_txt).await?;
+    /// ```
     ///
-    pub async fn move_to_async(&self, to_path: &File) -> std::io::Result<()> {
+    pub async fn move_to_async(&self, path: &File) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::rename(&self.path_omega(), &path.path_omega()).await
         }}
         if_browser_target! {{
-            let _ = to_path;
+            let _ = path;
             unsupported_browser_operation!();
         }}
     }
 
     /// Writes data to a file synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn write<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::write(&self.path_omega(), data)
         }}
         if_browser_target! {{
             let _ = data;
@@ -545,7 +701,7 @@ impl File {
     /// Writes data to a file asynchronously.
     pub async fn write_async<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::write(&self.path_omega(), data).await
         }}
         if_browser_target! {{
             target::browser::write_async(self.path_omega(), data.as_ref()).await
@@ -553,9 +709,15 @@ impl File {
     }
 
     /// The creation date of a file or directory. This method returns synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn creation_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|metadata| metadata.created().ok())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -572,7 +734,7 @@ impl File {
     /// 
     pub async fn creation_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.created().ok())
         }}
         if_browser_target! {{
             Ok(None)
@@ -581,9 +743,15 @@ impl File {
 
     /// The modification date of a file or directory. This method
     /// returns synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn modification_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|metadata| metadata.modified().ok())
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -599,7 +767,7 @@ impl File {
     /// 
     pub async fn modification_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.modified().ok())
         }}
         if_browser_target! {{
             target::browser::modification_date_async(self.path_omega()).await
@@ -607,9 +775,15 @@ impl File {
     }
 
     /// The size of a file. This method returns synchronously.
+    /// 
+    /// # Browser support
+    ///
+    /// This is a synchronous operation, therefore it is not supported
+    /// in the browser.
+    ///
     pub fn size(&self) -> std::io::Result<usize> {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|metadata| metadata.len() as usize)
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -619,7 +793,7 @@ impl File {
     /// The size of a file. This method returns asynchronously.
     pub async fn size_async(&self) -> std::io::Result<usize> {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.len() as usize)
         }}
         if_browser_target! {{
             target::browser::size_async(self.path_omega()).await
@@ -692,14 +866,12 @@ fn application_directory() -> String {
             if #[cfg(target_os = "android")] {
                 let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
                 path.join("install").to_string_lossy().into_owned()
+            } else if #[cfg(debug_assertions)] {
+                std::env::current_dir().unwrap().to_str().unwrap().into()
+            } else if #[cfg(target_os = "windows")] {
+                dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {
-                if cfg!(debug_assertions) {
-                    std::env::current_dir().unwrap().to_str().unwrap().into()
-                } else if #[cfg(target_os = "windows")] {
-                    dirs::data_local_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
-                } else {
-                    dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned()
-                }
+                dirs::data_dir().unwrap().join(&crate::application::id()).join("install").to_string_lossy().into_owned()
             }
         }
     }}
