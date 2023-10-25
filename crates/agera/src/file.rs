@@ -8,10 +8,10 @@ use std::path::Path;
 
 pub(crate) mod target;
 
-/// Represents a file, either in the file system, application or
+/// Represents a file or directory path, either in the native file system, application or
 /// application storage directory.
 /// 
-/// The following URIs are supported:
+/// The following URIs are supported when constructing a `File` object:
 /// 
 /// * `file:` — A file located in the native file system.
 /// * `app:` — A file located in the application installation directory.
@@ -23,7 +23,7 @@ pub(crate) mod target;
 /// Synchronous operations are expected to panic when running in the browser.
 /// * The `file:` scheme is not supported in the browser. If it is required
 /// for the application to pick user files or directories, consider using
-/// file pickers and thus `FileReference`.
+/// file pickers and thus `FileReference` and `DirectoryReference`.
 ///
 #[derive(Clone, PartialEq)]
 pub struct File {
@@ -961,3 +961,16 @@ fn videos_directory() -> Option<String> {
     }}
     if_browser_target! {{ None }}
 }
+
+/*
+/// `FileReference` represents a reference to a file.
+/// 
+/// # Browser support
+/// 
+/// Unlike with `File` objects, all operations on `FileReference` are asynchronous and are
+/// designed to be compatible with the browser.
+/// 
+pub struct FileReference {
+    inner: file_reference_target::FileReference,
+}
+*/

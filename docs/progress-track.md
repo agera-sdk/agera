@@ -20,9 +20,10 @@ File API.
 - [x] Access to various directories, including user directories
 - [ ] File streaming read and write (not a priority for now)
 
-Support `FileReference`, an alternative to `File` that complies with the Web File API, providing only asynchronous operations, used by file pickers more generally.
+Support `FileReference` and `DirectoryReference`, alternatives to `File` that comply with the Web File System API, providing only asynchronous operations, used by file pickers more generally.
 
 - [ ] `FileReference`
+- [ ] `DirectoryReference`
 - [ ] File picker functions
 
 ## agera::display
