@@ -1,34 +1,5 @@
-/*!
-Minor utilities.
-*/
-
-pub use ::bytes as bytes;
-pub use ::serde as ser;
-pub use ::serde_json as json;
-pub use ::lazy_regex as regex;
-pub use ::chrono as temporal;
-pub use ::file_paths as paths;
-
-pub mod event_emitter;
-pub mod future;
-pub mod uri;
-pub mod literals;
-
-/**
- * Returns the default value of a type.
- */
-pub fn default<T: Default>() -> T {
-    T::default()
-}
-
-pub use by_address::{ByAddress, ByThinAddress};
-
-pub use once_cell::sync::Lazy;
-
-pub use ::cfg_if::cfg_if;
-
 /// Provides additional methods for the standard `Vec<T>` type.
-pub trait VectorExtensions<T> {
+pub(crate) trait VectorExtensions<T> {
     /// Finds the index of a value.
     fn index_of(&self, value: &T) -> Option<usize> where T: PartialEq;
 
@@ -71,5 +42,3 @@ impl<T> VectorExtensions<T> for Vec<T> {
         }
     }
 }
-
-pub use late_format::LateFormat;

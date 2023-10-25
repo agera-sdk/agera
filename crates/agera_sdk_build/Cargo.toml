@@ -12,5 +12,7 @@ keywords = ["sdk"]
 
 [dependencies]
 agera_sdk_application_descriptor = { path = "../agera_sdk_application_descriptor" }
+cfg-if = "1.0.0"
+file_paths = "1.0.0"
 late_format = "1.0.0"
 maplit = "1.0.2"
