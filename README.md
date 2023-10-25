@@ -1,14 +1,12 @@
-# Agera SDK
-
 <p align="center">
 
 <img src="./assets/logo-72-ppi.png" width="500">
 
 </p>
 
-> The SDK is in no usable state and is not released for use yet. No significant work has been put yet, therefore it currently does not include display, sound, touch, keyboard, gamepad, user interface and several other APIs that it must support.
+> **NOTE**&nbsp;&nbsp;&nbsp; Unavailable
 
-Develop rich internet applications robustly through Agera SDK using the Rust programming language.
+Develop rich internet applications robustly through Agera SDK, built in the Rust programming language.
 
 <p align="center">
 
@@ -16,18 +14,18 @@ Develop rich internet applications robustly through Agera SDK using the Rust pro
 
 </p>
 
-## Development progress
+## Progress
 
-Agera should feel similiar to Adobe AIR and Apache Flex, but using the entity-component-system pattern and containing additional built-in features.
-
-- [Here are short plans](docs/plans.md)
+Agera should feel similiar to Adobe AIR and Apache Flex, but using a hierarchical Entity-Component pattern and containing additional built-in features.
 
 Additional notes:
 
-- *About the Rust language*: Developers must use the nightly Rust compiler to leverage language features, such as use of declarative macros and `try` blocks.
+- Rust: Developers must use the nightly Rust compiler to leverage language features, such as use of declarative macros and `try` blocks.
 
 When getting started with the CLI, creating a fresh project will look like follows:
 
 ```sh
 agera new com.q.a
 ```
+
+A fresh application will not require manually adding common minor dependencies such as, say, regular expressions, collection literals and serialization, as Agera re-exports them as APIs.
