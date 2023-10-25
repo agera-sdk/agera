@@ -67,5 +67,3 @@ pub use crate::util::{
 
     LateFormat,
 };
-
-pub use crate::entity::*;

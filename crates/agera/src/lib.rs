@@ -17,7 +17,7 @@ defined by the `agera::entity` module.
 
 # Graphical experience
 
-The `agera::display` and `agera::ui` modules are used to display graphics and controls
+The `agera::display` and `agera::controls` modules are used to display graphics and controls
 to the screen. It supports in-depth settings of display objects, such as registration point and filters
 and operations such as measurement of object bounds.
 

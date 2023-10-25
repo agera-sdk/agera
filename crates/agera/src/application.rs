@@ -1,4 +1,5 @@
 use crate::common::*;
+use crate::entity::*;
 
 static mut ROOT: Lazy<Entity> = Lazy::new(|| Entity::new());
 
