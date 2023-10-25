@@ -1,10 +1,10 @@
 /*!
 The foundational APIs used to write Agera rich internet applications.
 
-Agera applications are created either through the Agera command line interface or
-an integrated development environment.
+# The basics
 
-Rust programs generally include the following `use` item:
+Agera applications are created either through the Agera command line interface or
+an integrated development environment. Rust programs should include the following `use` item:
 
 ```
 use agera::common::*;
@@ -18,7 +18,7 @@ defined by the `agera::entity` module.
 # Graphical experience
 
 The `agera::display` and `agera::controls` modules are used to display graphics and controls
-to the screen. It supports in-depth settings of display objects, such as registration point and filters
+to the screen. Agera supports in-depth settings of display objects, such as registration point and filters
 and operations such as measurement of object bounds.
 
 # Working with files
@@ -34,6 +34,9 @@ let file = File::new("app://asset.svg");
 
 // Synchronous operation
 println!("{}", file.exists());
+
+// Asynchronous operation
+println!("{}", file.exists_async().await);
 ```
 
 # Working with events
@@ -42,8 +45,6 @@ Event conditions are commonly expressed as `EventEmitter` objects, to which the 
 may attach listeners by using the `.listener` method.
 
 ```
-use agera::common::*;
-
 // Registering listener
 let listener = button.on_click().listener(|e| {
     // Action

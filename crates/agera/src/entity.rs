@@ -20,6 +20,20 @@ something.get::<f64>();
 agera::application::root().add_child(something);
 ```
 
+# Entity paths
+
+Since Entities are in a hierarchy, every Entity that has a name may be found when
+using the `.resolve_path` method. However, there are special segments of an entity path that do not resolve
+by name, which may be useful in some contexts:
+
+- `.first` resolves to the first child of an entity;
+- `.last` resolves to the last child of an entity;
+- `..` resolves to the parent.
+
+```
+let last_entity: Option<Entity> = entity.resolve_path("../.last");
+```
+
 # Systems
 
 In the scope of the Entity-Component-System pattern, Systems are functions that take
