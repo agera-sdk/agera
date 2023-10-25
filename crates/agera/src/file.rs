@@ -962,7 +962,6 @@ fn videos_directory() -> Option<String> {
     if_browser_target! {{ None }}
 }
 
-/*
 /// `FileReference` represents a reference to a file.
 /// 
 /// # Browser support
@@ -973,4 +972,3 @@ fn videos_directory() -> Option<String> {
 pub struct FileReference {
     inner: file_reference_target::FileReference,
 }
-*/
