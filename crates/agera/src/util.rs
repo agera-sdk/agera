@@ -9,7 +9,6 @@ pub use ::lazy_regex as regex;
 pub use ::chrono as temporal;
 pub use ::file_paths as paths;
 
-pub mod event_emitter;
 pub mod future;
 pub mod uri;
 pub mod literals;

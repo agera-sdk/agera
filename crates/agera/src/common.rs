@@ -12,11 +12,13 @@ pub use std::collections::{
     BTreeMap,
     BTreeSet,
 };
-pub use crate::util::default;
-pub use crate::util::event_emitter::{
+
+pub use crate::events::{
     EventEmitter,
     EventListener,
 };
+
+pub use crate::util::default;
 
 pub use crate::util::bytes::{
     Bytes,
@@ -66,4 +68,4 @@ pub use crate::util::{
     LateFormat,
 };
 
-pub use crate::ecs::*;
+pub use crate::entity::*;

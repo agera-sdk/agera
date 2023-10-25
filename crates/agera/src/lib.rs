@@ -1,10 +1,10 @@
 /*!
-The API used to write Agera rich internet applications.
+The foundational APIs used to write Agera rich internet applications.
 
-# Basics
+Agera applications are created either through the Agera command line interface or
+an integrated development environment.
 
-Typically Agera applications are created either through an IDE or the Agera command line.
-Rust programs should typically contain the following `use` item:
+Rust programs generally include the following `use` item:
 
 ```
 use agera::common::*;
@@ -13,7 +13,7 @@ use agera::common::*;
 # Entities
 
 Agera uses a hierarchical Entity model, where multiple components are attached to an Entity,
-defined by the `agera::ecs` module.
+defined by the `agera::entity` module.
 
 # Graphical experience
 
@@ -59,7 +59,8 @@ listener.remove();
 
 pub mod application;
 pub mod common;
-pub mod ecs;
+pub mod entity;
+pub mod events;
 pub mod file;
 pub mod target;
 pub mod timer;

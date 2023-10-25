@@ -4,6 +4,8 @@ File API.
 
 use crate::{common::*, target::{if_native_target, if_browser_target}};
 use file_paths::*;
+
+#[allow(unused)]
 use std::path::Path;
 
 pub(crate) mod target;
@@ -978,6 +980,7 @@ cfg_if! {
     }
 }
 
+/*
 /// `FileReference` represents a reference to a file.
 /// 
 /// # Browser support
@@ -1001,3 +1004,4 @@ pub struct FileReference {
 pub struct DirectoryReference {
     inner: directory_reference_target::DirectoryReference,
 }
+*/

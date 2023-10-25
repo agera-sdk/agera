@@ -1,3 +1,34 @@
+/*!
+The hierarchical Entities used by Agera applications.
+
+An Entity consits of a set of components and an entity can have other
+children entities.
+
+```rust
+use agera::common::*;
+
+let something = Entity::new();
+
+// Set a component
+something.set::<f64>(10);
+
+// `Option<Arc<f64>>`
+something.get::<f64>();
+
+// `agera::application::root()` is the root `Entity` of the
+// application.
+agera::application::root().add_child(something);
+```
+
+# Systems
+
+In the scope of the Entity-Component-System pattern, Systems are functions that take
+a single hierarchy of Entities and operates on it.
+
+At the present, there are no built-in compile time facilities to query entities by components
+and detect component changes, a feature found in game engines such as Bevy Engine.
+*/
+
 use crate::common::*;
 use std::{
     any::Any,

@@ -15,6 +15,7 @@ where
 }
 
 /// Marks asynchronous code as `!Send`.
+#[allow(unused)]
 pub(crate) macro no_send {
     () => {
         futures::future::ready(std::marker::PhantomData::<*const ()>::default()).await;
