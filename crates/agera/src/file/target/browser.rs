@@ -44,14 +44,6 @@ extern "C" {
     async fn js_size_async(path: String) -> Result<JsValue, JsValue>;
 }
 
-pub fn within_application_directory(path: &str) -> String {
-    format!("/install{path}")
-}
-
-pub fn within_application_storage_directory(path: &str) -> String {
-    format!("/storage{path}")
-}
-
 pub async fn exists_async(path: String) -> bool {
     js_exists_async(path).await.as_bool().unwrap()
 }

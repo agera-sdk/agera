@@ -4,6 +4,7 @@ File API.
 
 use crate::{common::*, target::{if_native_target, if_browser_target}};
 use file_paths::*;
+use std::path::Path;
 
 pub(crate) mod target;
 
@@ -33,7 +34,7 @@ pub struct File {
 impl File {
     /// Creates a file with a specified native path or URI.
     /// `path_or_uri` is treated as an URI if it starts with either
-    /// `app:` or `app-storage:`.
+    /// `file:`, `app:` or `app-storage:`.
     pub fn new(path_or_uri: &str) -> File {
         if path_or_uri.starts_with("file:") {
             File {
@@ -171,10 +172,24 @@ impl File {
         self.resolve_path("..")
     }
 
+    fn path_omega(&self) -> String {
+        let mut p = self.path.clone();
+        match self.scheme {
+            FileScheme::App => {
+                p = format!("{}{p}", application_directory());
+            },
+            FileScheme::AppStorage => {
+                p = format!("{}{p}", application_storage_directory());
+            },
+            FileScheme::File => {},
+        }
+        FlexPath::new(&p, self.flex_path_variant()).to_string_with_flex_separator()
+    }
+
     /// Indicates whether a file or directory exists, synchronously.
     pub fn exists(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            Path::new(&self.path_omega()).exists()
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -184,21 +199,17 @@ impl File {
     /// Indicates whether a file or directory exists, asynchronously.
     pub async fn exists_async(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.is_ok()
         }}
         if_browser_target! {{
-            match self.scheme {
-                FileScheme::App => target::browser::exists_async(target::browser::within_application_directory(&self.path)).await,
-                FileScheme::AppStorage => target::browser::exists_async(target::browser::within_application_storage_directory(&self.path)).await,
-                FileScheme::File => false,
-            }
+            target::browser::exists_async(self.path_omega()).await
         }}
     }
 
     /// Indicates whether the `File` object is a directory, synchronously.
     pub fn is_directory(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|data| data.is_dir()).unwrap_or(false)
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -208,21 +219,17 @@ impl File {
     /// Indicates whether the `File` object is a directory, asynchronously.
     pub async fn is_directory_async(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_dir()).unwrap_or(false)
         }}
         if_browser_target! {{
-            match self.scheme {
-                FileScheme::App => target::browser::is_directory_async(target::browser::within_application_directory(&self.path)).await,
-                FileScheme::AppStorage => target::browser::is_directory_async(target::browser::within_application_storage_directory(&self.path)).await,
-                FileScheme::File => false,
-            }
+            target::browser::is_directory_async(self.path_omega()).await
         }}
     }
 
     /// Indicates whether the `File` object is a file, synchronously.
     pub fn is_file(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|data| data.is_file()).unwrap_or(false)
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -232,21 +239,17 @@ impl File {
     /// Indicates whether the `File` object is a file, asynchronously.
     pub async fn is_file_async(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_file()).unwrap_or(false)
         }}
         if_browser_target! {{
-            match self.scheme {
-                FileScheme::App => target::browser::is_file_async(target::browser::within_application_directory(&self.path)).await,
-                FileScheme::AppStorage => target::browser::is_file_async(target::browser::within_application_storage_directory(&self.path)).await,
-                FileScheme::File => false,
-            }
+            target::browser::is_file_async(self.path_omega()).await
         }}
     }
 
     /// Indicates whether the `File` object is a symbolic link, synchronously.
     pub fn is_symbolic_link(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            std::fs::metadata(&self.path_omega()).map(|data| data.is_symlink()).unwrap_or(false)
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -256,7 +259,7 @@ impl File {
     /// Indicates whether the `File` object is a symbolic link, asynchronously.
     pub async fn is_symbolic_link_async(&self) -> bool {
         if_native_target! {{
-            must_write_here_yet;
+            tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_symlink()).unwrap_or(false)
         }}
         if_browser_target! {{
             false
@@ -264,9 +267,17 @@ impl File {
     }
 
     /// Canonicalizes the file path, synchronously.
+    /// For non `file:` schemes, this returns the same path.
+    ///
     pub fn canonicalize(&self) -> File {
         if_native_target! {{
-            must_write_here_yet;
+            if self.scheme != FileScheme::File {
+                return self.clone();
+            }
+            if let Some(result) = Path::new(&self.path_omega()).canonicalize().ok().and_then(|result| result.to_str()) {
+                return File { scheme: FileScheme::File, path: result.to_owned() };
+            }
+            return self.clone();
         }}
         if_browser_target! {{
             unsupported_browser_sync_operation!();
@@ -274,9 +285,16 @@ impl File {
     }
 
     /// Canonicalizes the file path, asynchronously.
-    pub fn canonicalize_async(&self) -> File {
+    /// For non `file:` schemes, this returns the same path.
+    pub async fn canonicalize_async(&self) -> File {
         if_native_target! {{
-            must_write_here_yet;
+            if self.scheme != FileScheme::File {
+                return self.clone();
+            }
+            if let Some(result) = tokio::fs::canonicalize(&self.path_omega()).await.ok().map(|result| result.to_string_lossy().into_owned()) {
+                return File { scheme: FileScheme::File, path: result };
+            }
+            return self.clone();
         }}
         if_browser_target! {{
             self.clone()
@@ -332,15 +350,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let flex_path = self.flex_path();
-            let base_name = flex_path.base_name();
-            let mut parent_path = flex_path.resolve("..").to_string();
-            match self.scheme {
-                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
-                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::create_directory_async(parent_path, base_name).await
+            target::browser::create_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -360,13 +370,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::create_directory_all_async(path).await
+            target::browser::create_directory_all_async(self.path_omega()).await
         }}
     }
 
@@ -386,13 +390,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::read_bytes_async(path).await
+            target::browser::read_bytes_async(self.path_omega()).await
         }}
     }
 
@@ -412,13 +410,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::read_utf8_async(path).await
+            target::browser::read_utf8_async(self.path_omega()).await
         }}
     }
 
@@ -440,13 +432,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            let listing_1 = target::browser::directory_listing_async(path).await?;
+            let listing_1 = target::browser::directory_listing_async(self.path_omega()).await?;
             let mut listing_2 = vec![];
             for name in listing_1 {
                 listing_2.push(self.resolve_path(&name));
@@ -471,15 +457,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let flex_path = self.flex_path();
-            let base_name = flex_path.base_name();
-            let mut parent_path = flex_path.resolve("..").to_string();
-            match self.scheme {
-                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
-                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::delete_empty_directory_async(parent_path, base_name).await
+            target::browser::delete_empty_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -499,15 +477,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let flex_path = self.flex_path();
-            let base_name = flex_path.base_name();
-            let mut parent_path = flex_path.resolve("..").to_string();
-            match self.scheme {
-                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
-                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::delete_directory_all_async(parent_path, base_name).await
+            target::browser::delete_directory_all_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -527,15 +497,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let flex_path = self.flex_path();
-            let base_name = flex_path.base_name();
-            let mut parent_path = flex_path.resolve("..").to_string();
-            match self.scheme {
-                FileScheme::App => { parent_path = target::browser::within_application_directory(&parent_path); },
-                FileScheme::AppStorage => { parent_path = target::browser::within_application_storage_directory(&parent_path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::delete_file_async(parent_path, base_name).await
+            target::browser::delete_file_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -586,13 +548,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::write_async(path, data.as_ref()).await
+            target::browser::write_async(self.path_omega(), data.as_ref()).await
         }}
     }
 
@@ -646,13 +602,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::modification_date_async(path).await
+            target::browser::modification_date_async(self.path_omega()).await
         }}
     }
 
@@ -672,13 +622,7 @@ impl File {
             must_write_here_yet;
         }}
         if_browser_target! {{
-            let mut path = self.path.clone();
-            match self.scheme {
-                FileScheme::App => { path = target::browser::within_application_directory(&path); },
-                FileScheme::AppStorage => { path = target::browser::within_application_storage_directory(&path); },
-                FileScheme::File => { unsupported_browser_filescheme_operation!(); },
-            }
-            target::browser::size_async(path).await
+            target::browser::size_async(self.path_omega()).await
         }}
     }
 }
@@ -713,11 +657,12 @@ enum FileScheme {
 
 fn uri_to_native_path(uri: &str) -> String {
     assert!(uri.starts_with("file:"));
-    #[cfg(target_os = "windows")] {
-        return regex_replace!(r"^/{2,3}", &decode_uri(&uri[5..]), |_| "".to_owned()).into_owned();
-    }
-    #[cfg(not(target_os = "windows"))] {
-        return regex_replace!(r"^/{0,2}", &decode_uri(&uri[5..]), |_| "/".to_owned()).into_owned();
+    cfg_if! {
+        if #[cfg(target_os = "windows")] {
+            return regex_replace!(r"^/{2,3}", &decode_uri(&uri[5..]), |_| "".to_owned()).into_owned();
+        } else {
+            return regex_replace!(r"^/{0,2}", &decode_uri(&uri[5..]), |_| "/".to_owned()).into_owned();
+        }
     }
 }
 
@@ -759,7 +704,7 @@ fn application_directory() -> String {
         }
     }}
     if_browser_target! {{
-        panic!("Function must not be used in the web");
+        "/install".into()
     }}
 }
 
@@ -779,7 +724,7 @@ fn application_storage_directory() -> String {
         }
     }}
     if_browser_target! {{
-        panic!("Function must not be used in the web");
+        "/storage".into()
     }}
 }
 
