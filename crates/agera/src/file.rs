@@ -151,6 +151,27 @@ impl File {
         }
     }
 
+    /// Finds the relative path from this file or directory to `other`.
+    ///
+    /// # Panics
+    /// 
+    /// Panics if any of the `File` objects have a different scheme.
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use agera::file::*;
+    /// 
+    /// let file_1 = File::new("file:///C:/Users/John/Documents/foo.svg");
+    /// let file_2 = File::new("file:///C:/Users/John/Documents/bar.svg");
+    /// assert_eq!("../bar.svg", file_1.relative(file_2));
+    /// ```
+    ///
+    pub fn relative(&self, other: &File) -> String {
+        assert_eq!(self.scheme, other.scheme, "Files have different scheme");
+        self.flex_path().relative(&other.path)
+    }
+
     /// Resolves path to a file or directory.
     pub fn resolve_path(&self, path: &str) -> File {
         File {
@@ -822,7 +843,7 @@ macro unsupported_browser_filescheme_operation {
     },
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 enum FileScheme {
     File,
     App,
