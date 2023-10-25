@@ -1,7 +1,7 @@
 use std::sync::{Arc, RwLock};
 use crate::common::*;
 
-pub type EventListenerList<T> = Arc<RwLock<Vec<EventListener<T>>>>;
+type EventListenerList<T> = Arc<RwLock<Vec<EventListener<T>>>>;
 
 /// An event emitter.
 ///
@@ -20,16 +20,11 @@ impl<T: Clone> EventEmitter<T> {
         }
     }
 
-    /// The sequence of listeners attached to this event emitter.
-    pub fn listener_seq(&self) -> EventListenerList<T> {
-        Arc::clone(&self.listener_list)
-    }
-
     /// Adds a listener to an event emitter.
     pub fn listener<F>(&self, function: F) -> EventListener<T>
         where F: Fn(T) + Send + Sync + 'static
     {
-        let listener = EventListener::new(self.listener_seq(), function);
+        let listener = EventListener::new(Arc::clone(&self.listener_list), function);
         listener.add();
         listener
     }
@@ -96,15 +91,17 @@ impl<T: Clone> EventListener<T> {
         }
     }
 
-    /// Adds the event listener to the sequence of listeners if it was previously
-    /// removed by the `remove` method.
+    /// Adds the event listener to the end of the sequence of listeners if it was previously
+    /// removed by the `remove` method. If the event listener is already attached
+    /// to the sequence, it is moved to the end of the sequence.
     pub fn add(&self) {
         self.remove();
         let list = &self.inner.listener_list;
         list.write().unwrap().push(self.clone());
     }
 
-    /// Indicates if the event listener is actively present in the sequence of listeners.
+    /// Indicates whether the event listener is attached to the sequence of listeners,
+    /// that is, whether it was not removed from the sequence.
     pub fn is_active(&self) -> bool {
         let list = &self.inner.listener_list;
         list.read().unwrap().contains(self)
