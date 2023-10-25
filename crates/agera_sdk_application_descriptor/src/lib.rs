@@ -9,6 +9,14 @@ use self::errors::ParsingError;
 pub struct ApplicationDescriptor {
     /// The application ID.
     pub id: String,
+    pub install_files: ApplicationDescriptorInstallFiles,
+}
+
+/// The top-level `installFiles` property of the application descriptor.
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ApplicationDescriptorInstallFiles {
+    pub include: Vec<String>,
+    pub exclude: Vec<String>,
 }
 
 impl ApplicationDescriptor {
