@@ -45,7 +45,7 @@ may attach listeners by using the `.listener` method.
 use agera::common::*;
 
 // Registering listener
-let listener = button.on_click().listener(|action| {
+let listener = button.on_click().listener(|e| {
     // Action
 });
 

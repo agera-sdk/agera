@@ -25,7 +25,7 @@ pub(crate) mod target;
 /// for the application to pick user files or directories, consider using
 /// file pickers and thus `FileReference` and `DirectoryReference`.
 ///
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct File {
     scheme: FileScheme,
     path: String,
@@ -962,15 +962,42 @@ fn videos_directory() -> Option<String> {
     if_browser_target! {{ None }}
 }
 
-/*
+cfg_if! {
+    if #[cfg(target_arch = "wasm32")] {
+        #[path = "./file/file_reference_target/browser.rs"]
+        mod file_reference_target;
+
+        #[path = "./file/directory_reference_target/browser.rs"]
+        mod directory_reference_target;
+    } else {
+        #[path = "./file/file_reference_target/native.rs"]
+        mod file_reference_target;
+
+        #[path = "./file/directory_reference_target/native.rs"]
+        mod directory_reference_target;
+    }
+}
+
 /// `FileReference` represents a reference to a file.
 /// 
 /// # Browser support
 /// 
 /// Unlike with `File` objects, all operations on `FileReference` are asynchronous and are
 /// designed to be compatible with the browser.
-/// 
+///
+#[derive(Clone)]
 pub struct FileReference {
     inner: file_reference_target::FileReference,
 }
-*/
+
+/// `DirectoryReference` represents a reference to a directory.
+/// 
+/// # Browser support
+/// 
+/// Unlike with `File` objects, all operations on `DirectoryReference` are asynchronous and are
+/// designed to be compatible with the browser.
+///
+#[derive(Clone)]
+pub struct DirectoryReference {
+    inner: directory_reference_target::DirectoryReference,
+}

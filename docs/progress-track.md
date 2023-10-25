@@ -26,6 +26,10 @@ Support `FileReference` and `DirectoryReference`, alternatives to `File` that co
 - [ ] `DirectoryReference`
 - [ ] File picker functions
 
+Should be properly played with:
+
+- [ ] Use of `File` on the web browser: installation files and storage files.
+
 ## agera::display
 
 - Refer to https://wgpu.rs

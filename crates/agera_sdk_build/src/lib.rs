@@ -68,8 +68,10 @@ fn install_files_web(descriptor: &ApplicationDescriptor) -> String {
             let file_paths = descriptor.glob_install_files().expect("'applicationDescriptor.installFiles' contains invalid paths");
             for file_path in file_paths {
                 let current_directory = std::env::current_dir().unwrap().to_string_lossy().into_owned();
-                let relative_file_path = FlexPath::new_native(&current_directory).relative(&file_path);
-                write_calls.push(format!("    let _ = app_root.resolve_path({relative_file_path}).write_async(include_bytes!(\"{file_path}\")).await;"));
+                let current_directory_flex = FlexPath::new_native(&current_directory);
+                let file_path = current_directory_flex.resolve(&file_path).to_string();
+                let relative_file_path = current_directory_flex.relative(&file_path);
+                write_calls.push(format!("    let _ = app_root.resolve_path(\"{relative_file_path}\").write_async(include_bytes!(\"{file_path}\")).await.unwrap();"));
             }
             write_calls.join("\n")
         } else {
