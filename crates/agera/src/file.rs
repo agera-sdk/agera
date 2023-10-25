@@ -980,6 +980,7 @@ cfg_if! {
     }
 }
 
+/*
 /// `FileReference` represents a reference to a file.
 /// 
 /// # Browser support
@@ -1003,3 +1004,4 @@ pub struct FileReference {
 pub struct DirectoryReference {
     inner: directory_reference_target::DirectoryReference,
 }
+*/
