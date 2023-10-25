@@ -1,7 +1,7 @@
 /*!
 The foundational APIs used to write Agera rich internet applications.
 
-# The basics
+# The Basics
 
 Agera applications are created either through the Agera command line interface or
 an integrated development environment. Rust programs should include the following `use` item:
@@ -15,13 +15,13 @@ use agera::common::*;
 Agera uses a hierarchical Entity model, where multiple components are attached to an Entity,
 defined by the `agera::entity` module.
 
-# Graphical experience
+# Graphical Experience
 
 The `agera::display` and `agera::controls` modules are used to display graphics and controls
 to the screen. Agera supports in-depth settings of display objects, such as registration point and filters
 and operations such as measurement of object bounds.
 
-# Working with files
+# Working with Files
 
 The `agera::file` module provides ways of operating on files, either by path or by reference.
 It abstracts away working with files that belong to the application.
@@ -39,7 +39,7 @@ println!("{}", file.exists());
 println!("{}", file.exists_async().await);
 ```
 
-# Working with events
+# Working with Events
 
 Event conditions are commonly expressed as `EventEmitter` objects, to which the programmer
 may attach listeners by using the `.listener` method.

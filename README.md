@@ -1,13 +1,11 @@
 <p align="center">
-
-<img src="./assets/logo-72-ppi.png" width="500">
-
+  <img src="./assets/logo-72-ppi.png" width="500">
 </p>
 
 <p align="center">
-
-<a href="https://docs.rs/agera/latest/agera/"><img src="https://img.shields.io/badge/Rust%20API%20documentation-gray?link=https%3A%2F%2Fdocs.rs%2Fagera%2Flatest%2Fagera%2F"></a>
-
+  <a href="https://docs.rs/agera/latest/agera/">
+    <img src="https://img.shields.io/badge/Rust%20API%20Documentation-gray?link=https%3A%2F%2Fdocs.rs%2Fagera%2Flatest%2Fagera%2F">
+  </a>
 </p>
 
 # Agera SDK
