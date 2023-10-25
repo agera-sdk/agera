@@ -2,14 +2,13 @@ use std::sync::{Arc, RwLock};
 use crate::common::*;
 
 pub type EventListenerList<T> = Arc<RwLock<Vec<EventListener<T>>>>;
-pub type EventListenerFunction<T> = Box<dyn Fn(T) + Send + Sync + 'static>;
 
 /// An event emitter.
 ///
 /// `EventEmitter` consists of a sequence of listeners whose function is invoked
 /// when an event is emitted with a single data value.
 /// 
-/// Event listeners to an event emitter are created through the [`event_listener!`] macro.
+/// Event listeners to an event emitter are created through the `listener` method.
 pub struct EventEmitter<T: Clone> {
     listener_list: EventListenerList<T>,
 }
@@ -26,8 +25,10 @@ impl<T: Clone> EventEmitter<T> {
         Arc::clone(&self.listener_list)
     }
 
-    #[doc(hidden)]
-    pub fn add_listener(&self, function: EventListenerFunction<T>) -> EventListener<T> {
+    /// Adds a listener to an event emitter.
+    pub fn listener<F>(&self, function: F) -> EventListener<T>
+        where F: Fn(T) + Send + Sync + 'static
+    {
         let listener = EventListener::new(self.listener_seq(), function);
         listener.add();
         listener
@@ -45,6 +46,7 @@ impl<T: Clone> EventEmitter<T> {
     }
 }
 
+/*
 /// Creates an event listener to an event emitter, returning `EventListener<T>`.
 /// 
 /// # Syntax
@@ -62,6 +64,7 @@ pub macro event_listener {
         emitter.add_listener(Box::new($function))
     },
 }
+*/
 
 pub struct EventListener<T: Clone> {
     inner: Arc<EventListenerInner<T>>,
@@ -84,17 +87,17 @@ impl<T: Clone> Clone for EventListener<T> {
 }
 
 impl<T: Clone> EventListener<T> {
-    pub fn new(listener_list: EventListenerList<T>, function: EventListenerFunction<T>) -> Self {
+    pub fn new<F: Fn(T) + Send + Sync + 'static>(listener_list: EventListenerList<T>, function: F) -> Self {
         Self {
             inner: Arc::new(EventListenerInner {
                 listener_list,
-                function,
+                function: Box::new(function),
             }),
         }
     }
 
-    /// Adds the event listener to the sequence of listeners.
-    /// This method is called implicitly by the [`event_listener!`] macro.
+    /// Adds the event listener to the sequence of listeners if it was previously
+    /// removed by the `remove` method.
     pub fn add(&self) {
         self.remove();
         let list = &self.inner.listener_list;
@@ -116,5 +119,5 @@ impl<T: Clone> EventListener<T> {
 
 struct EventListenerInner<T: Clone> {
     listener_list: EventListenerList<T>,
-    function: EventListenerFunction<T>,
+    function: Box<dyn Fn(T) + Send + Sync + 'static>,
 }

@@ -39,13 +39,13 @@ println!("{}", file.exists());
 # Working with events
 
 Event conditions are commonly expressed as `EventEmitter` objects, to which the programmer
-may attach listeners by using the `event_listener!` macro.
+may attach listeners by using the `.listener` method.
 
 ```
 use agera::common::*;
 
 // Registering listener
-let listener = event_listener!(button.on_click(), |action| {
+let listener = button.on_click().listener(|action| {
     // Action
 });
 
