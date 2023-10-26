@@ -2,7 +2,7 @@
 File API.
 */
 
-use crate::{common::*, target::{if_native_target, if_browser_target}};
+use crate::{common::*, platforms::{if_native_platform, if_browser}};
 use file_paths::*;
 
 #[allow(unused)]
@@ -76,13 +76,13 @@ impl File {
     /// This function is not supported in the browser and may thus panic.
     /// 
     pub fn current_directory() -> File {
-        if_native_target! {{
+        if_native_platform! {{
             Self {
                 scheme: FileScheme::File,
                 path: std::env::current_dir().unwrap().to_string_lossy().into_owned(),
             }
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_operation!();
         }}
     }
@@ -241,20 +241,20 @@ impl File {
     /// in the browser.
     ///
     pub fn exists(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             Path::new(&self.path_omega()).exists()
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Indicates whether a file or directory exists, asynchronously.
     pub async fn exists_async(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.is_ok()
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::exists_async(self.path_omega()).await
         }}
     }
@@ -267,20 +267,20 @@ impl File {
     /// in the browser.
     ///
     pub fn is_directory(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_dir()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Indicates whether the `File` object is a directory, asynchronously.
     pub async fn is_directory_async(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_dir()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::is_directory_async(self.path_omega()).await
         }}
     }
@@ -293,20 +293,20 @@ impl File {
     /// in the browser.
     ///
     pub fn is_file(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_file()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Indicates whether the `File` object is a file, asynchronously.
     pub async fn is_file_async(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_file()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::is_file_async(self.path_omega()).await
         }}
     }
@@ -319,20 +319,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn is_symbolic_link(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|data| data.is_symlink()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Indicates whether the `File` object is a symbolic link, asynchronously.
     pub async fn is_symbolic_link_async(&self) -> bool {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_symlink()).unwrap_or(false)
         }}
-        if_browser_target! {{
+        if_browser! {{
             false
         }}
     }
@@ -346,7 +346,7 @@ impl File {
     /// in the browser.
     /// 
     pub fn canonicalize(&self) -> File {
-        if_native_target! {{
+        if_native_platform! {{
             if self.scheme != FileScheme::File {
                 return self.clone();
             }
@@ -355,7 +355,7 @@ impl File {
             }
             return self.clone();
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
@@ -363,7 +363,7 @@ impl File {
     /// Canonicalizes the file path, asynchronously.
     /// For non `file:` schemes, this returns the same path.
     pub async fn canonicalize_async(&self) -> File {
-        if_native_target! {{
+        if_native_platform! {{
             if self.scheme != FileScheme::File {
                 return self.clone();
             }
@@ -372,7 +372,7 @@ impl File {
             }
             return self.clone();
         }}
-        if_browser_target! {{
+        if_browser! {{
             self.clone()
         }}
     }
@@ -386,11 +386,11 @@ impl File {
     /// in the browser.
     ///
     pub fn copy_file_contents_to(&self, location: &File) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::copy(&self.path_omega(), &location.path_omega())?;
             Ok(())
         }}
-        if_browser_target! {{
+        if_browser! {{
             let _ = location;
             unsupported_browser_sync_operation!();
         }}
@@ -405,11 +405,11 @@ impl File {
     /// and thus should panic.
     ///
     pub async fn copy_file_contents_to_async(&self, location: &File) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::copy(&self.path_omega(), &location.path_omega()).await?;
             Ok(())
         }}
-        if_browser_target! {{
+        if_browser! {{
             let _ = location;
             unsupported_browser_operation!();
         }}
@@ -423,20 +423,20 @@ impl File {
     /// in the browser.
     ///
     pub fn create_directory(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::create_dir(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Creates an empty directory asynchronously.
     pub async fn create_directory_async(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::create_dir(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::create_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
@@ -449,20 +449,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn create_directory_all(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::create_dir_all(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Creates a directory and its parent directories asynchronously.
     pub async fn create_directory_all_async(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::create_dir_all(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::create_directory_all_async(self.path_omega()).await
         }}
     }
@@ -475,20 +475,20 @@ impl File {
     /// in the browser.
     ///
     pub fn read_bytes(&self) -> std::io::Result<Bytes> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::read(&self.path_omega()).map(|data| Bytes::from(data))
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Reads the bytes from a file asynchronously.
     pub async fn read_bytes_async(&self) -> std::io::Result<Bytes> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::read(&self.path_omega()).await.map(|data| Bytes::from(data))
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::read_bytes_async(self.path_omega()).await
         }}
     }
@@ -501,20 +501,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn read_utf8(&self) -> std::io::Result<String> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::read_to_string(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Reads an UTF-8 encoded string from a file asynchronously.
     pub async fn read_utf8_async(&self) -> std::io::Result<String> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::read_to_string(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::read_utf8_async(self.path_omega()).await
         }}
     }
@@ -527,7 +527,7 @@ impl File {
     /// in the browser.
     /// 
     pub fn directory_listing(&self) -> std::io::Result<Vec<File>> {
-        if_native_target! {{
+        if_native_platform! {{
             let listing_1 = std::fs::read_dir(&self.path_omega())?;
             let mut listing_2 = vec![];
             for entry in listing_1 {
@@ -539,14 +539,14 @@ impl File {
             }
             Ok(listing_2)
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Returns entries from a directory, asynchronously.
     pub async fn directory_listing_async(&self) -> std::io::Result<Vec<File>> {
-        if_native_target! {{
+        if_native_platform! {{
             let mut listing_1 = tokio::fs::read_dir(&self.path_omega()).await?;
             let mut listing_2 = vec![];
             loop {
@@ -564,7 +564,7 @@ impl File {
             }
             Ok(listing_2)
         }}
-        if_browser_target! {{
+        if_browser! {{
             let listing_1 = target::browser::directory_listing_async(self.path_omega()).await?;
             let mut listing_2 = vec![];
             for name in listing_1 {
@@ -582,20 +582,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_empty_directory(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::remove_dir(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Deletes an empty directory asynchronously.
     pub async fn delete_empty_directory_async(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::remove_dir(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::delete_empty_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
@@ -608,20 +608,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_directory_all(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::remove_dir_all(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Deletes a directory recursively asynchronously.
     pub async fn delete_directory_all_async(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::remove_dir_all(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::delete_directory_all_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
@@ -634,20 +634,20 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_file(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::remove_file(&self.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
 
     /// Deletes a file asynchronously.
     pub async fn delete_file_async(&self) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::remove_file(&self.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::delete_file_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
@@ -672,10 +672,10 @@ impl File {
     /// ```
     /// 
     pub fn move_to(&self, path: &File) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::rename(&self.path_omega(), &path.path_omega())
         }}
-        if_browser_target! {{
+        if_browser! {{
             let _ = path;
             unsupported_browser_sync_operation!();
         }}
@@ -701,10 +701,10 @@ impl File {
     /// ```
     ///
     pub async fn move_to_async(&self, path: &File) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::rename(&self.path_omega(), &path.path_omega()).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             let _ = path;
             unsupported_browser_operation!();
         }}
@@ -718,10 +718,10 @@ impl File {
     /// in the browser.
     ///
     pub fn write<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::write(&self.path_omega(), data)
         }}
-        if_browser_target! {{
+        if_browser! {{
             let _ = data;
             unsupported_browser_sync_operation!();
         }}
@@ -729,10 +729,10 @@ impl File {
 
     /// Writes data to a file asynchronously.
     pub async fn write_async<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::write(&self.path_omega(), data).await
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::write_async(self.path_omega(), data.as_ref()).await
         }}
     }
@@ -745,10 +745,10 @@ impl File {
     /// in the browser.
     ///
     pub fn creation_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|metadata| metadata.created().ok())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
@@ -762,10 +762,10 @@ impl File {
     /// `Ok(None)`.
     /// 
     pub async fn creation_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.created().ok())
         }}
-        if_browser_target! {{
+        if_browser! {{
             Ok(None)
         }}
     }
@@ -779,10 +779,10 @@ impl File {
     /// in the browser.
     ///
     pub fn modification_date(&self) -> std::io::Result<Option<std::time::SystemTime>> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|metadata| metadata.modified().ok())
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
@@ -795,10 +795,10 @@ impl File {
     /// In the browser, this method returns `Ok(None)` for directories.
     /// 
     pub async fn modification_date_async(&self) -> std::io::Result<Option<std::time::SystemTime>> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.modified().ok())
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::modification_date_async(self.path_omega()).await
         }}
     }
@@ -811,10 +811,10 @@ impl File {
     /// in the browser.
     ///
     pub fn size(&self) -> std::io::Result<usize> {
-        if_native_target! {{
+        if_native_platform! {{
             std::fs::metadata(&self.path_omega()).map(|metadata| metadata.len() as usize)
         }}
-        if_browser_target! {{
+        if_browser! {{
             unsupported_browser_sync_operation!();
         }}
     }
@@ -822,10 +822,10 @@ impl File {
     /// The size of a file, in bytes. This method returns asynchronously.
     /// 
     pub async fn size_async(&self) -> std::io::Result<usize> {
-        if_native_target! {{
+        if_native_platform! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.len() as usize)
         }}
-        if_browser_target! {{
+        if_browser! {{
             target::browser::size_async(self.path_omega()).await
         }}
     }
@@ -891,10 +891,10 @@ pub async fn __agera_File_bootstrap() {
 }
 
 fn application_directory() -> String {
-    if_native_target! {{
+    if_native_platform! {{
         cfg_if! {
             if #[cfg(target_os = "android")] {
-                let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+                let path = if let Some(p) = crate::platforms::application().external_data_path() { p } else { crate::platforms::application().internal_data_path().unwrap() };
                 path.join("install").to_string_lossy().into_owned()
             } else if #[cfg(debug_assertions)] {
                 std::env::current_dir().unwrap().to_str().unwrap().into()
@@ -905,16 +905,16 @@ fn application_directory() -> String {
             }
         }
     }}
-    if_browser_target! {{
+    if_browser! {{
         "/install".into()
     }}
 }
 
 fn application_storage_directory() -> String {
-    if_native_target! {{
+    if_native_platform! {{
         cfg_if! {
             if #[cfg(target_os = "android")] {
-                let path = if let Some(p) = crate::target::application().external_data_path() { p } else { crate::target::application().internal_data_path().unwrap() };
+                let path = if let Some(p) = crate::platforms::application().external_data_path() { p } else { crate::platforms::application().internal_data_path().unwrap() };
                 path.join("storage").to_string_lossy().into_owned()
             } else if #[cfg(debug_assertions)] {
                 std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
@@ -925,44 +925,44 @@ fn application_storage_directory() -> String {
             }
         }
     }}
-    if_browser_target! {{
+    if_browser! {{
         "/storage".into()
     }}
 }
 
 fn downloads_directory() -> Option<String> {
-    if_native_target! {{
+    if_native_platform! {{
         dirs::download_dir().map(|d| d.to_string_lossy().into_owned())
     }}
-    if_browser_target! {{ None }}
+    if_browser! {{ None }}
 }
 
 fn documents_directory() -> Option<String> {
-    if_native_target! {{
+    if_native_platform! {{
         dirs::document_dir().map(|d| d.to_string_lossy().into_owned())
     }}
-    if_browser_target! {{ None }}
+    if_browser! {{ None }}
 }
 
 fn pictures_directory() -> Option<String> {
-    if_native_target! {{
+    if_native_platform! {{
         dirs::picture_dir().map(|d| d.to_string_lossy().into_owned())
     }}
-    if_browser_target! {{ None }}
+    if_browser! {{ None }}
 }
 
 fn music_directory() -> Option<String> {
-    if_native_target! {{
+    if_native_platform! {{
         dirs::audio_dir().map(|d| d.to_string_lossy().into_owned())
     }}
-    if_browser_target! {{ None }}
+    if_browser! {{ None }}
 }
 
 fn videos_directory() -> Option<String> {
-    if_native_target! {{
+    if_native_platform! {{
         dirs::video_dir().map(|d| d.to_string_lossy().into_owned())
     }}
-    if_browser_target! {{ None }}
+    if_browser! {{ None }}
 }
 
 cfg_if! {
@@ -975,34 +975,34 @@ cfg_if! {
     }
 }
 
-/// `AbstractFileReference` represents a reference to a file or directory.
+/// `FileOrDirectoryReference` represents a reference to a file or directory.
 ///
 #[derive(Clone)]
-pub struct AbstractFileReference(file_reference_target::AbstractFileReference);
+pub struct FileOrDirectoryReference(file_reference_target::FileOrDirectoryReference);
 
-impl AbstractFileReference {
+impl FileOrDirectoryReference {
     /// Returns the name of the file or directory. This is the last
     /// segment of the full file path, including any extensions.
     pub fn name(&self) -> String {
         self.0.name()
     }
 
-    /// Indicates whether an `AbstractFileReference` is a directory.
+    /// Indicates whether an `FileOrDirectoryReference` is a directory.
     pub fn is_directory(&self) -> bool {
         self.as_directory().is_some()
     }
 
-    /// Indicates whether an `AbstractFileReference` is a file.
+    /// Indicates whether an `FileOrDirectoryReference` is a file.
     pub fn is_file(&self) -> bool {
         self.as_file().is_some()
     }
 
-    /// Attempts to convert a `AbstractFileReference` into a directory reference.
+    /// Attempts to convert a `FileOrDirectoryReference` into a directory reference.
     pub fn as_directory(&self) -> Option<DirectoryReference> {
         self.0.as_directory().map(|d| DirectoryReference(d))
     }
 
-    /// Attempts to convert a `AbstractFileReference` into a file reference.
+    /// Attempts to convert a `FileOrDirectoryReference` into a file reference.
     pub fn as_file(&self) -> Option<FileReference> {
         self.0.as_file().map(|f| FileReference(f))
     }
@@ -1051,6 +1051,12 @@ impl FileReference {
     }
 }
 
+impl From<FileReference> for FileOrDirectoryReference {
+    fn from(value: FileReference) -> Self {
+        FileOrDirectoryReference(value.0.into())
+    }
+}
+
 /// `DirectoryReference` represents a reference to a directory.
 /// 
 /// # Browser support
@@ -1059,6 +1065,10 @@ impl FileReference {
 /// designed to be compatible with the browser.
 ///
 #[derive(Clone)]
-pub struct DirectoryReference {
-    inner: file_reference_target::DirectoryReference,
+pub struct DirectoryReference(file_reference_target::DirectoryReference);
+
+impl From<DirectoryReference> for FileOrDirectoryReference {
+    fn from(value: DirectoryReference) -> Self {
+        FileOrDirectoryReference(value.0.into())
+    }
 }

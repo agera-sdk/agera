@@ -24,7 +24,7 @@ pub macro start {
             $start_action.await;
         }
 
-        ::agera::target::if_native_target! {
+        ::agera::target::if_native_platform! {
             use ::agera::target::tokio as __agera_target_tokio__;
 
             fn __start_local_set() -> ::agera::target::tokio::task::LocalSet {
@@ -59,7 +59,7 @@ pub macro start {
         }
 
         // Browser
-        ::agera::target::if_browser_target! {
+        ::agera::target::if_browser! {
             fn main() {
                 ::agera::common::future::exec(__bootstrap());
             }

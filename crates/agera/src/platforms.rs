@@ -40,7 +40,7 @@ use crate::common::*;
 use std::sync::RwLock;
 
 /// Expands an item solely if the build target is a native platform.
-pub macro if_native_target {
+pub macro if_native_platform {
     ($it:block) => {
         #[cfg(not(target_arch = "wasm32"))]
         $it
@@ -54,7 +54,7 @@ pub macro if_native_target {
 }
 
 /// Expands an item solely if the build target is the browser.
-pub macro if_browser_target {
+pub macro if_browser {
     ($it:block) => {
         #[cfg(target_arch = "wasm32")]
         $it
@@ -74,7 +74,7 @@ pub(crate) macro unsupported_platform {
     },
 }
 
-if_native_target! {
+if_native_platform! {
     pub use tokio;
 }
 
@@ -93,7 +93,7 @@ pub fn application() -> activity::AndroidApp {
     APPLICATION.read().unwrap().as_ref().unwrap().clone()
 }
 
-if_browser_target! {
+if_browser! {
     pub use wasm_bindgen as js_bindings;
     pub use wasm_bindgen_futures as js_futures;
     pub use js_sys as js;

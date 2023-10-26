@@ -1,5 +1,5 @@
-use crate::target::if_browser_target;
+use crate::platforms::if_browser;
 
-if_browser_target! {
+if_browser! {
     pub mod browser;
 }

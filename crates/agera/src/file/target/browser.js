@@ -67,12 +67,8 @@ export async function directoryListingAsync(path) {
     const handle = await getDirectoryHandleAsync(path);
     const listing = [];
     try {
-        for (const key of handle.keys()) {
-            try {
-                listing.push(await key);
-            } catch (error) {
-                // Ignore error
-            }
+        for await (const key of handle.keys()) {
+            listing.push(key);
         }
     } catch (error) {
         throw transformError(error);

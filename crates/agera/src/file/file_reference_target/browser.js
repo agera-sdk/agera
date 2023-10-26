@@ -62,7 +62,7 @@ export class JSFileReference {
     }
 }
 
-export class JSAbstractFileReference {
+export class JSFileOrDirectoryReference {
     /**
      * @param {FileSystemHandle} handle 
      */
@@ -102,9 +102,19 @@ export class JSDirectoryReference {
     }
 
     /**
-     * @returns {Promise<JSAbstractFileReference>}
+     * @returns {Promise<[string, JSFileOrDirectoryReference]>}
      */
-    async entries() {}
+    async entries() {
+        const results = [];
+        for (const [name, handlePromise] of this.handle.entries()) {
+            try {
+                results.push(new JSFileOrDirectoryReference(await handlePromise));
+            } catch (error) {
+                throw transformError(error);
+            }
+        }
+        return results;
+    }
 }
 
 const errorConstants = {

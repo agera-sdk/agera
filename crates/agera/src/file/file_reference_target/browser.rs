@@ -30,25 +30,25 @@ extern "C" {
     async fn size(this: &JSFileReference) -> Result<JsValue, JsValue>;
 
     #[derive(Clone)]
-    type JSAbstractFileReference;
+    type JSFileOrDirectoryReference;
 
     #[wasm_bindgen(constructor)]
-    fn new(handle: JsValue) -> JSAbstractFileReference;
+    fn new(handle: JsValue) -> JSFileOrDirectoryReference;
 
     #[wasm_bindgen(method, js_name = name)]
-    fn name(this: &JSAbstractFileReference) -> String;
+    fn name(this: &JSFileOrDirectoryReference) -> String;
 
     #[wasm_bindgen(method, js_name = asDirectory)]
-    fn as_directory(this: &JSAbstractFileReference) -> Option<JSDirectoryReference>;
+    fn as_directory(this: &JSFileOrDirectoryReference) -> Option<JSDirectoryReference>;
 
     #[wasm_bindgen(method, js_name = asFile)]
-    fn as_file(this: &JSAbstractFileReference) -> Option<JSFileReference>;
+    fn as_file(this: &JSFileOrDirectoryReference) -> Option<JSFileReference>;
 }
 
 #[derive(Clone)]
-pub struct AbstractFileReference(pub JSAbstractFileReference);
+pub struct FileOrDirectoryReference(pub JSFileOrDirectoryReference);
 
-impl AbstractFileReference {
+impl FileOrDirectoryReference {
     pub fn name(&self) -> String {
         self.0.name()
     }

@@ -63,6 +63,6 @@ pub mod common;
 pub mod entity;
 pub mod events;
 pub mod file;
-pub mod target;
+pub mod platforms;
 pub mod timer;
 pub mod util;

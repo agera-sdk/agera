@@ -1,15 +1,15 @@
 use futures::Future;
-use crate::target::{if_native_target, if_browser_target};
+use crate::platforms::{if_native_platform, if_browser};
 
 pub fn exec<F>(future: F)
 where
     F: Future<Output = ()> + 'static,
 {
-    if_native_target! {{
+    if_native_platform! {{
         crate::application::assert_bootstrapped!();
         tokio::task::spawn_local(future);
     }}
-    if_browser_target! {{
+    if_browser! {{
         wasm_bindgen_futures::spawn_local(future);
     }}
 }

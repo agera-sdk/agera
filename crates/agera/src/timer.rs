@@ -4,7 +4,7 @@ Work with timing and tickers.
 
 pub use std::time::Duration;
 use std::{ops::{Add, AddAssign, Sub, SubAssign}, sync::{Arc, RwLock}};
-use crate::{target::{if_native_target, if_browser_target}, common::*};
+use crate::{platforms::{if_native_platform, if_browser}, common::*};
 
 mod target;
 
@@ -130,11 +130,11 @@ impl Ticker {
 /// ```
 /// 
 pub async fn wait(duration: Duration) {
-    if_native_target! {{
+    if_native_platform! {{
         future::no_send!();
         tokio::time::sleep(duration).await;
     }}
-    if_browser_target! {{
+    if_browser! {{
         target::browser::wait(duration).await;
     }}
 }
@@ -168,11 +168,11 @@ pub async fn wait(duration: Duration) {
 /// ```
 /// 
 pub async fn wait_until(deadline: Instant) {
-    if_native_target! {{
+    if_native_platform! {{
         future::no_send!();
         tokio::time::sleep_until(deadline.inner.0).await;
     }}
-    if_browser_target! {{
+    if_browser! {{
         target::browser::wait(deadline.since(Instant::now())).await;
     }}
 }
@@ -243,12 +243,12 @@ pub async fn wait_until(deadline: Instant) {
 /// [`.tick().await`]: Ticker::tick
 ///
 pub fn ticker(period: Duration) -> Ticker {
-    if_native_target! {{
+    if_native_platform! {{
         return Ticker {
             inner: target::native::Ticker(tokio::time::interval(period)),
         };
     }}
-    if_browser_target! {{
+    if_browser! {{
         assert!(period.as_millis() != 0, "agera::timer::ticker() must be called with non-zero period");
         return Ticker {
             inner: target::browser::Ticker {
@@ -297,12 +297,12 @@ pub fn ticker(period: Duration) -> Ticker {
 /// ```
 /// 
 pub fn ticker_at(start: Instant, period: Duration) -> Ticker {
-    if_native_target! {{
+    if_native_platform! {{
         return Ticker {
             inner: target::native::Ticker(tokio::time::interval_at(start.inner.0, period)),
         };
     }}
-    if_browser_target! {{
+    if_browser! {{
         assert!(period.as_millis() != 0, "agera::timer::ticker_at() must be called with non-zero period");
         return Ticker {
             inner: target::browser::Ticker {
@@ -348,12 +348,12 @@ pub fn ticker_at(start: Instant, period: Duration) -> Ticker {
 /// [`.tick().await`]: Ticker::tick
 ///
 pub fn animation_ticker(period: Duration) -> Ticker {
-    if_native_target! {{
+    if_native_platform! {{
         return Ticker {
             inner: target::native::Ticker(tokio::time::interval(period)),
         };
     }}
-    if_browser_target! {{
+    if_browser! {{
         assert!(period.as_millis() != 0, "agera::timer::ticker() must be called with non-zero period");
         return Ticker {
             inner: target::browser::Ticker {
@@ -397,12 +397,12 @@ pub fn animation_ticker(period: Duration) -> Ticker {
 /// ```
 /// 
 pub fn animation_ticker_at(start: Instant, period: Duration) -> Ticker {
-    if_native_target! {{
+    if_native_platform! {{
         return Ticker {
             inner: target::native::Ticker(tokio::time::interval_at(start.inner.0, period)),
         };
     }}
-    if_browser_target! {{
+    if_browser! {{
         assert!(period.as_millis() != 0, "agera::timer::ticker_at() must be called with non-zero period");
         return Ticker {
             inner: target::browser::Ticker {
