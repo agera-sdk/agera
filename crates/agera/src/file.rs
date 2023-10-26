@@ -26,6 +26,11 @@ pub(crate) mod platforms;
 /// * The `file:` scheme is not supported in the browser. If it is required
 /// for the application to pick user files or directories, consider using
 /// file pickers and thus `FileReference` and `DirectoryReference`.
+/// 
+/// # Application files
+/// 
+/// `File` objects with the `app:` URL are read-only, thus no write operations
+/// will succeed.
 ///
 #[derive(Clone, Eq, PartialEq)]
 pub struct File {
@@ -385,6 +390,9 @@ impl File {
     /// in the browser.
     ///
     pub fn copy_file_contents_to(&self, location: &File) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::copy(&self.path_omega(), &location.path_omega())?;
             Ok(())
@@ -404,6 +412,9 @@ impl File {
     /// and thus should panic.
     ///
     pub async fn copy_file_contents_to_async(&self, location: &File) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::copy(&self.path_omega(), &location.path_omega()).await?;
             Ok(())
@@ -422,6 +433,9 @@ impl File {
     /// in the browser.
     ///
     pub fn create_directory(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::create_dir(&self.path_omega())
         }}
@@ -432,6 +446,9 @@ impl File {
 
     /// Creates an empty directory asynchronously.
     pub async fn create_directory_async(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::create_dir(&self.path_omega()).await
         }}
@@ -448,6 +465,9 @@ impl File {
     /// in the browser.
     /// 
     pub fn create_directory_all(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::create_dir_all(&self.path_omega())
         }}
@@ -458,6 +478,9 @@ impl File {
 
     /// Creates a directory and its parent directories asynchronously.
     pub async fn create_directory_all_async(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::create_dir_all(&self.path_omega()).await
         }}
@@ -581,6 +604,9 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_empty_directory(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::remove_dir(&self.path_omega())
         }}
@@ -591,6 +617,9 @@ impl File {
 
     /// Deletes an empty directory asynchronously.
     pub async fn delete_empty_directory_async(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::remove_dir(&self.path_omega()).await
         }}
@@ -607,6 +636,9 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_directory_all(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::remove_dir_all(&self.path_omega())
         }}
@@ -617,6 +649,9 @@ impl File {
 
     /// Deletes a directory recursively asynchronously.
     pub async fn delete_directory_all_async(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::remove_dir_all(&self.path_omega()).await
         }}
@@ -633,6 +668,9 @@ impl File {
     /// in the browser.
     /// 
     pub fn delete_file(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::remove_file(&self.path_omega())
         }}
@@ -643,6 +681,9 @@ impl File {
 
     /// Deletes a file asynchronously.
     pub async fn delete_file_async(&self) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::remove_file(&self.path_omega()).await
         }}
@@ -671,6 +712,9 @@ impl File {
     /// ```
     /// 
     pub fn move_to(&self, path: &File) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::rename(&self.path_omega(), &path.path_omega())
         }}
@@ -700,6 +744,9 @@ impl File {
     /// ```
     ///
     pub async fn move_to_async(&self, path: &File) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::rename(&self.path_omega(), &path.path_omega()).await
         }}
@@ -717,6 +764,9 @@ impl File {
     /// in the browser.
     ///
     pub fn write<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             std::fs::write(&self.path_omega(), data)
         }}
@@ -728,6 +778,9 @@ impl File {
 
     /// Writes data to a file asynchronously.
     pub async fn write_async<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
+        if self.scheme == FileScheme::App {
+            return Err(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Permission denied to 'app:'"));
+        }
         if_native_platform! {{
             tokio::fs::write(&self.path_omega(), data).await
         }}
