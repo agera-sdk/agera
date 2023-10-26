@@ -967,18 +967,18 @@ fn videos_directory() -> Option<String> {
 
 cfg_if! {
     if #[cfg(target_arch = "wasm32")] {
-        #[path = "./file/file_reference_target/browser.rs"]
-        mod file_reference_target;
+        #[path = "./file/reference/platforms/browser.rs"]
+        mod reference;
     } else {
-        #[path = "./file/file_reference_target/native.rs"]
-        mod file_reference_target;
+        #[path = "./file/reference/platforms/native.rs"]
+        mod reference;
     }
 }
 
 /// `FileOrDirectoryReference` represents a reference to a file or directory.
 ///
 #[derive(Clone)]
-pub struct FileOrDirectoryReference(file_reference_target::FileOrDirectoryReference);
+pub struct FileOrDirectoryReference(reference::FileOrDirectoryReference);
 
 impl FileOrDirectoryReference {
     /// Returns the name of the file or directory. This is the last
@@ -1016,7 +1016,7 @@ impl FileOrDirectoryReference {
 /// designed to be compatible with the browser.
 ///
 #[derive(Clone)]
-pub struct FileReference(file_reference_target::FileReference);
+pub struct FileReference(reference::FileReference);
 
 impl FileReference {
     /// Reads bytes from a file.
@@ -1065,7 +1065,7 @@ impl From<FileReference> for FileOrDirectoryReference {
 /// designed to be compatible with the browser.
 ///
 #[derive(Clone)]
-pub struct DirectoryReference(file_reference_target::DirectoryReference);
+pub struct DirectoryReference(reference::DirectoryReference);
 
 impl From<DirectoryReference> for FileOrDirectoryReference {
     fn from(value: DirectoryReference) -> Self {

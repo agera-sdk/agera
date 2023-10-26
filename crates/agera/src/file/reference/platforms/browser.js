@@ -115,6 +115,22 @@ export class JSDirectoryReference {
         }
         return results;
     }
+
+    async getDirectory(name, create) {
+        try {
+            return new JSDirectoryReference(await this.handle.getDirectoryHandle(name, { create }));
+        } catch (error) {
+            throw transformError(error);
+        }
+    }
+
+    async getFile(name, create) {
+        try {
+            return new JSFileReference(await this.handle.getFileHandle(name, { create }));
+        } catch (error) {
+            throw transformError(error);
+        }
+    }
 }
 
 const errorConstants = {
