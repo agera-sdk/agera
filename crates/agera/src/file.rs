@@ -8,7 +8,7 @@ use file_paths::*;
 #[allow(unused)]
 use std::path::Path;
 
-pub(crate) mod target;
+pub(crate) mod platforms;
 
 /// Represents a path to a file or directory, either in the native file system, application or
 /// application storage directory.
@@ -255,7 +255,7 @@ impl File {
             tokio::fs::metadata(&self.path_omega()).await.is_ok()
         }}
         if_browser! {{
-            target::browser::exists_async(self.path_omega()).await
+            platforms::browser::exists_async(self.path_omega()).await
         }}
     }
 
@@ -281,7 +281,7 @@ impl File {
             tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_dir()).unwrap_or(false)
         }}
         if_browser! {{
-            target::browser::is_directory_async(self.path_omega()).await
+            platforms::browser::is_directory_async(self.path_omega()).await
         }}
     }
 
@@ -307,7 +307,7 @@ impl File {
             tokio::fs::metadata(&self.path_omega()).await.map(|data| data.is_file()).unwrap_or(false)
         }}
         if_browser! {{
-            target::browser::is_file_async(self.path_omega()).await
+            platforms::browser::is_file_async(self.path_omega()).await
         }}
     }
 
@@ -437,7 +437,7 @@ impl File {
             tokio::fs::create_dir(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::create_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
+            platforms::browser::create_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -463,7 +463,7 @@ impl File {
             tokio::fs::create_dir_all(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::create_directory_all_async(self.path_omega()).await
+            platforms::browser::create_directory_all_async(self.path_omega()).await
         }}
     }
 
@@ -489,7 +489,7 @@ impl File {
             tokio::fs::read(&self.path_omega()).await.map(|data| Bytes::from(data))
         }}
         if_browser! {{
-            target::browser::read_bytes_async(self.path_omega()).await
+            platforms::browser::read_bytes_async(self.path_omega()).await
         }}
     }
 
@@ -515,7 +515,7 @@ impl File {
             tokio::fs::read_to_string(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::read_utf8_async(self.path_omega()).await
+            platforms::browser::read_utf8_async(self.path_omega()).await
         }}
     }
 
@@ -565,7 +565,7 @@ impl File {
             Ok(listing_2)
         }}
         if_browser! {{
-            let listing_1 = target::browser::directory_listing_async(self.path_omega()).await?;
+            let listing_1 = platforms::browser::directory_listing_async(self.path_omega()).await?;
             let mut listing_2 = vec![];
             for name in listing_1 {
                 listing_2.push(self.resolve_path(&name));
@@ -596,7 +596,7 @@ impl File {
             tokio::fs::remove_dir(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::delete_empty_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
+            platforms::browser::delete_empty_directory_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -622,7 +622,7 @@ impl File {
             tokio::fs::remove_dir_all(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::delete_directory_all_async(self.parent().path_omega(), self.flex_path().base_name()).await
+            platforms::browser::delete_directory_all_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -648,7 +648,7 @@ impl File {
             tokio::fs::remove_file(&self.path_omega()).await
         }}
         if_browser! {{
-            target::browser::delete_file_async(self.parent().path_omega(), self.flex_path().base_name()).await
+            platforms::browser::delete_file_async(self.parent().path_omega(), self.flex_path().base_name()).await
         }}
     }
 
@@ -733,7 +733,7 @@ impl File {
             tokio::fs::write(&self.path_omega(), data).await
         }}
         if_browser! {{
-            target::browser::write_async(self.path_omega(), data.as_ref()).await
+            platforms::browser::write_async(self.path_omega(), data.as_ref()).await
         }}
     }
 
@@ -799,7 +799,7 @@ impl File {
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.modified().ok())
         }}
         if_browser! {{
-            target::browser::modification_date_async(self.path_omega()).await
+            platforms::browser::modification_date_async(self.path_omega()).await
         }}
     }
 
@@ -826,7 +826,7 @@ impl File {
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.len() as usize)
         }}
         if_browser! {{
-            target::browser::size_async(self.path_omega()).await
+            platforms::browser::size_async(self.path_omega()).await
         }}
     }
 }

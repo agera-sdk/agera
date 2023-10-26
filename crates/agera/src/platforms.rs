@@ -5,16 +5,16 @@ Work with the target platform.
 
 The following items are available when building for native platforms:
 
-- `agera::target::tokio` — Alias to the `tokio` crate, an asynchronous runtime for Rust.
+- `agera::platforms::tokio` — Alias to the `tokio` crate, an asynchronous runtime for Rust.
 
 # Android platform
 
 The folllowing items are available when building an Agera application
 for the Android operating system:
 
-- `agera::target::activity` — Alias to the [`android_activity`](https://crates.io/crates/android-activity) crate.
-- `agera::target::jni` — Alias to the [`jni`](https://crates.io/crates/jni) crate.
-- `agera::target::application()` — Returns an `agera::target::activity::AndroidApp` value
+- `agera::platforms::activity` — Alias to the [`android_activity`](https://crates.io/crates/android-activity) crate.
+- `agera::platforms::jni` — Alias to the [`jni`](https://crates.io/crates/jni) crate.
+- `agera::platforms::application()` — Returns an `agera::platforms::activity::AndroidApp` value
 providing access to the Android application.
 
 # Browser
@@ -28,9 +28,9 @@ are internally used:
 
 The following items are available when building for the browser:
 
-- `agera::target::js_bindings` — Alias to the `wasm_bindgen` crate.
-- `agera::target::js_futures` — Alias to the `wasm_bindgen_futures` crate.
-- `agera::target::js` — Alias to the `js_sys` crate.
+- `agera::platforms::js_bindings` — Alias to the `wasm_bindgen` crate.
+- `agera::platforms::js_futures` — Alias to the `wasm_bindgen_futures` crate.
+- `agera::platforms::js` — Alias to the `js_sys` crate.
 */
 
 #[allow(unused)]

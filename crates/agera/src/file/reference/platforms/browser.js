@@ -64,7 +64,7 @@ export class JSFileReference {
     /**
      * @returns {number}
      */
-    async modificationDate() {
+    async modificationEpochMilliseconds() {
         try {
             const file = await this.handle.getFile();
             return file.lastModified;

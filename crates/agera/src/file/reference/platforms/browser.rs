@@ -1,7 +1,7 @@
 use crate::common::*;
 use std::io;
 use wasm_bindgen::prelude::*;
-use crate::file::target::browser::{
+use crate::file::platforms::browser::{
     js_io_error_to_rs_io_error,
     js_io_error_to_rs_io_error_for_delete_directory,
 };
@@ -38,8 +38,8 @@ extern "C" {
     #[wasm_bindgen(catch, method, js_name = write)]
     async fn write(this: &JSFileReference, bytes: JsValue) -> Result<JsValue, JsValue>;
 
-    #[wasm_bindgen(catch, method, js_name = modificationDate)]
-    async fn modification_date(this: &JSFileReference) -> Result<JsValue, JsValue>;
+    #[wasm_bindgen(catch, method, js_name = modificationEpochMilliseconds)]
+    async fn modification_epoch_milliseconds(this: &JSFileReference) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(catch, method, js_name = size)]
     async fn size(this: &JSFileReference) -> Result<JsValue, JsValue>;
@@ -52,6 +52,17 @@ extern "C" {
 
     #[wasm_bindgen(method, js_name = name)]
     fn name(this: &JSDirectoryReference) -> String;
+
+    #[wasm_bindgen(catch, method, js_name = entries)]
+    fn entries(this: &JSDirectoryReference) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, method, js_name = getDirectory)]
+    fn get_directory(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, method, js_name = getFile)]
+    fn get_file(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
+
+
 }
 
 #[derive(Clone)]
@@ -89,7 +100,7 @@ impl FileReference {
     }
 
     pub async fn modification_date(&self) -> io::Result<std::time::SystemTime> {
-        let ms = self.0.modification_date().await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+        let ms = self.0.modification_epoch_milliseconds().await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
         let ms: u64 = unsafe { ms.as_f64().unwrap().to_int_unchecked() };
         Ok(std::time::SystemTime::UNIX_EPOCH + std::time::Duration::from_millis(ms))
     }

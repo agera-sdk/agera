@@ -24,11 +24,11 @@ pub macro start {
             $start_action.await;
         }
 
-        ::agera::target::if_native_platform! {
-            use ::agera::target::tokio as __agera_target_tokio__;
+        ::agera::platforms::if_native_platform! {
+            use ::agera::platforms::tokio as __agera_target_tokio__;
 
-            fn __start_local_set() -> ::agera::target::tokio::task::LocalSet {
-                let __local_set = ::agera::target::tokio::task::LocalSet::new();
+            fn __start_local_set() -> ::agera::platforms::tokio::task::LocalSet {
+                let __local_set = ::agera::platforms::tokio::task::LocalSet::new();
                 __local_set.run_until(__bootstrap())
             }
 
@@ -37,7 +37,7 @@ pub macro start {
                 if #[cfg(target_os = "android")] {
                     #[no_mangle]
                     fn android_main(app: AndroidApp) {
-                        *(::agera::target::APPLICATION.write().unwrap()) = Some(app.clone());
+                        *(::agera::platforms::APPLICATION.write().unwrap()) = Some(app.clone());
                         ::std::fs::create_dir_all(&(::agera::file::application_installation_directory())).unwrap();
                         ::std::fs::create_dir_all(&(::agera::file::application_storage_directory())).unwrap();
 
@@ -59,7 +59,7 @@ pub macro start {
         }
 
         // Browser
-        ::agera::target::if_browser! {
+        ::agera::platforms::if_browser! {
             fn main() {
                 ::agera::common::future::exec(__bootstrap());
             }
