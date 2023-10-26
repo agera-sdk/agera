@@ -15,9 +15,7 @@
 Develop rich internet applications robustly through Agera SDK, built in the Rust programming language.
 
 <p align="center">
-
-<img src="./assets/intro-code.png">
-
+  <img src="./assets/intro-code.png">
 </p>
 
 ## Progress
