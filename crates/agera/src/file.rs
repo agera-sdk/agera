@@ -30,7 +30,7 @@ pub(crate) mod platforms;
 /// # Application files
 /// 
 /// `File` objects with the `app:` URL are read-only, thus no write operations
-/// will succeed.
+/// will succeed on them.
 ///
 #[derive(Clone, Eq, PartialEq)]
 pub struct File {
