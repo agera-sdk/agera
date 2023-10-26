@@ -22,8 +22,6 @@ Develop rich internet applications robustly through Agera SDK, built in the Rust
 
 ## Progress
 
-Finishing the file API.
-
 Agera uses mainly hierarchical Entities, featuring:
 
 - [ ] Graphical experience
@@ -38,7 +36,7 @@ Agera uses mainly hierarchical Entities, featuring:
 - [ ] Networking APIs
   - [ ] HTTP
   - [ ] WebSocket
-- [ ] File APIs
+- [x] File APIs
 
 Other features may be unlisted.
 
