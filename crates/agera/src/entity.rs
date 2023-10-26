@@ -47,7 +47,7 @@ use crate::common::*;
 use std::{
     any::Any,
     sync::{Arc, RwLock, Weak},
-    hash::Hash,
+    hash::Hash, fmt::Debug,
 };
 
 type Component = Arc<dyn Any + Send + Sync>;
@@ -56,6 +56,12 @@ type Component = Arc<dyn Any + Send + Sync>;
 /// reference-counted type.
 pub struct Entity {
     inner: Arc<EntityInner>,
+}
+
+impl Debug for Entity {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Entity")
+    }
 }
 
 impl Hash for Entity {
@@ -298,7 +304,6 @@ struct EntityInner {
 }
 
 /// Represents a weak reference to an entity.
-#[derive(Debug)]
 pub struct WeakEntityRef(Weak<EntityInner>);
 
 impl WeakEntityRef {
@@ -311,6 +316,12 @@ impl WeakEntityRef {
     /// Attempts to upgrade a weak reference into a strong reference.
     pub fn upgrade(&self) -> Option<Entity> {
         if let Some(r) = self.0.upgrade() { Some(Entity { inner: r }) } else { None }
+    }
+}
+
+impl Debug for WeakEntityRef {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "WeakEntityRef")
     }
 }
 
@@ -332,5 +343,30 @@ impl Eq for WeakEntityRef {}
 impl Clone for WeakEntityRef {
     fn clone(&self) -> Self {
         Self(self.0.clone())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::entity::*;
+
+    #[test]
+    fn test_components() {
+        let entity = Entity::new();
+        entity.set(10.0);
+        assert_eq!(10.0, *entity.get::<f64>().unwrap());
+
+        entity.delete::<f64>();
+        assert!(entity.get::<f64>().is_none());
+    }
+
+    #[test]
+    fn test_hierarchy() {
+        let topmost = Entity::new();
+        let child_1 = Entity::new();
+        child_1.set_name(Some("child1".into()));
+        topmost.add_child(&child_1);
+        assert_eq!("child1".to_owned(), topmost.resolve_path(".last").unwrap().name().unwrap());
+        assert_eq!(topmost.resolve_path(".last").unwrap(), child_1);
     }
 }
