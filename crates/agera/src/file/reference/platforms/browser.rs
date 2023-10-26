@@ -9,6 +9,21 @@ use crate::file::target::browser::{
 #[wasm_bindgen(module = "browser.js")]
 extern "C" {
     #[derive(Clone)]
+    type JSFileSystemReference;
+
+    #[wasm_bindgen(constructor)]
+    fn new(handle: JsValue) -> JSFileSystemReference;
+
+    #[wasm_bindgen(method, js_name = name)]
+    fn name(this: &JSFileSystemReference) -> String;
+
+    #[wasm_bindgen(method, js_name = asDirectory)]
+    fn as_directory(this: &JSFileSystemReference) -> Option<JSDirectoryReference>;
+
+    #[wasm_bindgen(method, js_name = asFile)]
+    fn as_file(this: &JSFileSystemReference) -> Option<JSFileReference>;
+
+    #[derive(Clone)]
     type JSFileReference;
 
     #[wasm_bindgen(constructor)]
@@ -30,25 +45,19 @@ extern "C" {
     async fn size(this: &JSFileReference) -> Result<JsValue, JsValue>;
 
     #[derive(Clone)]
-    type JSFileOrDirectoryReference;
+    type JSDirectoryReference;
 
     #[wasm_bindgen(constructor)]
-    fn new(handle: JsValue) -> JSFileOrDirectoryReference;
+    fn new(handle: JsValue) -> JSDirectoryReference;
 
     #[wasm_bindgen(method, js_name = name)]
-    fn name(this: &JSFileOrDirectoryReference) -> String;
-
-    #[wasm_bindgen(method, js_name = asDirectory)]
-    fn as_directory(this: &JSFileOrDirectoryReference) -> Option<JSDirectoryReference>;
-
-    #[wasm_bindgen(method, js_name = asFile)]
-    fn as_file(this: &JSFileOrDirectoryReference) -> Option<JSFileReference>;
+    fn name(this: &JSDirectoryReference) -> String;
 }
 
 #[derive(Clone)]
-pub struct FileOrDirectoryReference(pub JSFileOrDirectoryReference);
+pub struct FileSystemReference(pub JSFileSystemReference);
 
-impl FileOrDirectoryReference {
+impl FileSystemReference {
     pub fn name(&self) -> String {
         self.0.name()
     }

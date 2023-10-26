@@ -10,9 +10,9 @@ enum EntryKind {
 }
 
 #[derive(Clone)]
-pub struct FileOrDirectoryReference(pub PathBuf, EntryKind);
+pub struct FileSystemReference(pub PathBuf, EntryKind);
 
-impl FileOrDirectoryReference {
+impl FileSystemReference {
     pub fn name(&self) -> String {
         FlexPath::new_native(&self.0.to_string_lossy().into_owned()).base_name()
     }

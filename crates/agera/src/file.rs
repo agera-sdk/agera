@@ -1,5 +1,5 @@
 /*!
-File API.
+APIs for working with files.
 */
 
 use crate::{common::*, platforms::{if_native_platform, if_browser}};
@@ -10,7 +10,7 @@ use std::path::Path;
 
 pub(crate) mod target;
 
-/// Represents a file or directory path, either in the native file system, application or
+/// Represents a path to a file or directory, either in the native file system, application or
 /// application storage directory.
 /// 
 /// The following URIs are supported when constructing a `File` object:
@@ -975,40 +975,40 @@ cfg_if! {
     }
 }
 
-/// `FileOrDirectoryReference` represents a reference to a file or directory.
+/// `FileSystemReference` represents a reference to a file or directory in the file system.
 ///
 #[derive(Clone)]
-pub struct FileOrDirectoryReference(reference::FileOrDirectoryReference);
+pub struct FileSystemReference(reference::FileSystemReference);
 
-impl FileOrDirectoryReference {
+impl FileSystemReference {
     /// Returns the name of the file or directory. This is the last
     /// segment of the full file path, including any extensions.
     pub fn name(&self) -> String {
         self.0.name()
     }
 
-    /// Indicates whether an `FileOrDirectoryReference` is a directory.
+    /// Indicates whether an `FileSystemReference` is a directory.
     pub fn is_directory(&self) -> bool {
         self.as_directory().is_some()
     }
 
-    /// Indicates whether an `FileOrDirectoryReference` is a file.
+    /// Indicates whether an `FileSystemReference` is a file.
     pub fn is_file(&self) -> bool {
         self.as_file().is_some()
     }
 
-    /// Attempts to convert a `FileOrDirectoryReference` into a directory reference.
+    /// Attempts to convert a `FileSystemReference` into a directory reference.
     pub fn as_directory(&self) -> Option<DirectoryReference> {
         self.0.as_directory().map(|d| DirectoryReference(d))
     }
 
-    /// Attempts to convert a `FileOrDirectoryReference` into a file reference.
+    /// Attempts to convert a `FileSystemReference` into a file reference.
     pub fn as_file(&self) -> Option<FileReference> {
         self.0.as_file().map(|f| FileReference(f))
     }
 }
 
-/// `FileReference` represents a reference to a file.
+/// `FileReference` represents a reference to a file in the file system.
 /// 
 /// # Browser support
 /// 
@@ -1051,13 +1051,20 @@ impl FileReference {
     }
 }
 
-impl From<FileReference> for FileOrDirectoryReference {
+impl From<FileReference> for FileSystemReference {
     fn from(value: FileReference) -> Self {
-        FileOrDirectoryReference(value.0.into())
+        FileSystemReference(value.0.into())
     }
 }
 
-/// `DirectoryReference` represents a reference to a directory.
+impl TryFrom<FileSystemReference> for FileReference {
+    type Error = ();
+    fn try_from(value: FileSystemReference) -> Result<Self, Self::Error> {
+        if let Some(d) = value.as_file() { Ok(d) } else { Err(()) }
+    }
+}
+
+/// `DirectoryReference` represents a reference to a directory in the file system.
 /// 
 /// # Browser support
 /// 
@@ -1067,8 +1074,15 @@ impl From<FileReference> for FileOrDirectoryReference {
 #[derive(Clone)]
 pub struct DirectoryReference(reference::DirectoryReference);
 
-impl From<DirectoryReference> for FileOrDirectoryReference {
+impl From<DirectoryReference> for FileSystemReference {
     fn from(value: DirectoryReference) -> Self {
-        FileOrDirectoryReference(value.0.into())
+        FileSystemReference(value.0.into())
+    }
+}
+
+impl TryFrom<FileSystemReference> for DirectoryReference {
+    type Error = ();
+    fn try_from(value: FileSystemReference) -> Result<Self, Self::Error> {
+        if let Some(d) = value.as_directory() { Ok(d) } else { Err(()) }
     }
 }
