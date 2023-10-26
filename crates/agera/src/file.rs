@@ -1144,7 +1144,7 @@ impl DirectoryReference {
         self.0.delete_directory_all(name).await
     }
 
-    /// Deletes a file entry recursively. `name` is taken as the entry filename.
+    /// Deletes a file entry. `name` is taken as the entry filename.
     pub async fn delete_file(&self, name: &str) -> std::io::Result<()> {
         self.0.delete_file(name).await
     }
