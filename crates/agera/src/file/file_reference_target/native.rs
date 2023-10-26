@@ -3,7 +3,30 @@ use file_paths::FlexPath;
 use crate::common::*;
 use std::{io, path::PathBuf};
 
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Eq, PartialEq, Copy, Clone)]
+enum EntryKind {
+    File,
+    Directory,
+}
+
+#[derive(Clone)]
+pub struct AbstractFileReference(pub PathBuf, EntryKind);
+
+impl AbstractFileReference {
+    pub fn name(&self) -> String {
+        FlexPath::new_native(&self.0.to_string_lossy().into_owned()).base_name()
+    }
+
+    pub fn as_directory(&self) -> Option<DirectoryReference> {
+        if self.1 == EntryKind::Directory { Some(DirectoryReference(self.0)) } else { None }
+    }
+
+    pub fn as_file(&self) -> Option<DirectoryReference> {
+        if self.1 == EntryKind::File { Some(FileReference(self.0)) } else { None }
+    }
+}
+
+#[derive(Clone)]
 pub struct FileReference(pub PathBuf);
 
 impl FileReference {
@@ -24,8 +47,8 @@ impl FileReference {
         tokio::fs::metadata(&self.0).await.and_then(|metadata| metadata.modified())
     }
 
-    pub async fn name(&self) -> io::Result<String> {
-        Ok(FlexPath::new_native(&self.0.to_string_lossy().into_owned()).base_name())
+    pub fn name(&self) -> String {
+        FlexPath::new_native(&self.0.to_string_lossy().into_owned()).base_name()
     }
 
     pub async fn size(&self) -> io::Result<usize> {

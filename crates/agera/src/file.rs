@@ -969,15 +969,42 @@ cfg_if! {
     if #[cfg(target_arch = "wasm32")] {
         #[path = "./file/file_reference_target/browser.rs"]
         mod file_reference_target;
-
-        #[path = "./file/directory_reference_target/browser.rs"]
-        mod directory_reference_target;
     } else {
         #[path = "./file/file_reference_target/native.rs"]
         mod file_reference_target;
+    }
+}
 
-        #[path = "./file/directory_reference_target/native.rs"]
-        mod directory_reference_target;
+/// `AbstractFileReference` represents a reference to a file or directory.
+///
+#[derive(Clone)]
+pub struct AbstractFileReference(file_reference_target::AbstractFileReference);
+
+impl AbstractFileReference {
+    /// Returns the name of the file or directory. This is the last
+    /// segment of the full file path, including any extensions.
+    pub fn name(&self) -> String {
+        self.0.name()
+    }
+
+    /// Indicates whether an `AbstractFileReference` is a directory.
+    pub fn is_directory(&self) -> bool {
+        self.as_directory().is_some()
+    }
+
+    /// Indicates whether an `AbstractFileReference` is a file.
+    pub fn is_file(&self) -> bool {
+        self.as_file().is_some()
+    }
+
+    /// Attempts to convert a `AbstractFileReference` into a directory reference.
+    pub fn as_directory(&self) -> Option<DirectoryReference> {
+        self.0.as_directory().map(|d| DirectoryReference(d))
+    }
+
+    /// Attempts to convert a `AbstractFileReference` into a file reference.
+    pub fn as_file(&self) -> Option<FileReference> {
+        self.0.as_file().map(|f| FileReference(f))
     }
 }
 
@@ -1014,8 +1041,8 @@ impl FileReference {
 
     /// The name of a file. This operation returns the last segment
     /// of the full file path, including any file extensions.
-    pub async fn name(&self) -> std::io::Result<String> {
-        self.0.name().await
+    pub fn name(&self) -> String {
+        self.0.name()
     }
 
     /// The size of a file, in bytes.
@@ -1033,5 +1060,5 @@ impl FileReference {
 ///
 #[derive(Clone)]
 pub struct DirectoryReference {
-    inner: directory_reference_target::DirectoryReference,
+    inner: file_reference_target::DirectoryReference,
 }

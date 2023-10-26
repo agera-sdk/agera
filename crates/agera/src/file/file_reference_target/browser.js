@@ -7,10 +7,10 @@ export class JSFileReference {
     }
 
     /**
-     * @param {JSFileReference} other
+     * @returns {string}
      */
-    equals(other) {
-        return this.handle.isSameEntry(other.handle);
+    name() {
+        return this.handle.name;
     }
 
     /**
@@ -50,18 +50,6 @@ export class JSFileReference {
     }
 
     /**
-     * @returns {string}
-     */
-    async name() {
-        try {
-            const file = await this.handle.getFile();
-            return file.name;
-        } catch (error) {
-            throw transformError(error);
-        }
-    }
-
-    /**
      * @returns {number}
      */
     async size() {
@@ -72,6 +60,51 @@ export class JSFileReference {
             throw transformError(error);
         }
     }
+}
+
+export class JSAbstractFileReference {
+    /**
+     * @param {FileSystemHandle} handle 
+     */
+    constructor(handle) {
+        this.handle = handle;
+    }
+
+    /**
+     * @returns {string}
+     */
+    name() {
+        return this.handle.name;
+    }
+
+    asDirectory() {
+        return this.handle.kind == "directory" ? new JSDirectoryReference(this.handle) : null;
+    }
+
+    asFile() {
+        return this.handle.kind == "file" ? new JSFileReference(this.handle) : null;
+    }
+}
+
+export class JSDirectoryReference {
+    /**
+     * @param {FileSystemDirectoryHandle} handle 
+     */
+    constructor(handle) {
+        this.handle = handle;
+    }
+
+    /**
+     * @returns {string}
+     */
+    name() {
+        return this.handle.name;
+    }
+
+    /**
+     * @returns {Promise<JSAbstractFileReference>}
+     */
+    async entries() {}
 }
 
 const errorConstants = {
