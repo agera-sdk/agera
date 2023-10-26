@@ -970,7 +970,7 @@ fn application_storage_directory() -> String {
                 let path = if let Some(p) = crate::platforms::application().external_data_path() { p } else { crate::platforms::application().internal_data_path().unwrap() };
                 path.join("storageFiles").to_string_lossy().into_owned()
             } else if #[cfg(debug_assertions)] {
-                std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/storage").to_string_lossy().into_owned()
+                std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("agera_sdk_build/debug_storage_files").to_string_lossy().into_owned()
             } else if #[cfg(target_os = "windows")] {
                 dirs::data_dir().unwrap().join(&crate::application::id()).to_string_lossy().into_owned()
             } else {

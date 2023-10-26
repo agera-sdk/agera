@@ -44,8 +44,8 @@ pub fn __bootstrap(output_directory: &str) {
     })).unwrap();
 
     #[cfg(debug_assertions)] {
-        // Reset directory {output_directory}/agera_sdk_build/storage
-        let storage_path = output_directory.join("agera_sdk_build/storage");
+        // Reset directory {output_directory}/agera_sdk_build/debug_storage_files
+        let storage_path = output_directory.join("agera_sdk_build/debug_storage_files");
         drop(std::fs::remove_dir_all(storage_path.clone()));
         std::fs::create_dir_all(storage_path.clone()).unwrap();
     }
