@@ -188,9 +188,7 @@ impl File {
         }
     }
 
-    /// Returns a flexible representation of the `File`'s path,
-    /// which provides a number of operations.
-    pub fn flex_path(&self) -> FlexPath {
+    fn flex_path(&self) -> FlexPath {
         FlexPath::new(&self.path, self.flex_path_variant())
     }
 
@@ -207,7 +205,8 @@ impl File {
     }
 
     /// Indicates the extension of the file, including the first
-    /// dot character (`.`).
+    /// dot character (`.`). This method only considers a single dot character
+    /// as part of the extension.
     pub fn extension(&self) -> Option<String> {
         let c = regex_captures!(r"\..+$", &self.path);
         c.map(|c| c.to_owned())
