@@ -13,7 +13,7 @@ pub(crate) mod platforms;
 /// Represents a path to a file or directory, either in the native file system, application or
 /// application storage directory.
 /// 
-/// The following URIs are supported when constructing a `File` object:
+/// The following URLs are supported when constructing a `File` object:
 /// 
 /// * `file:` — A file located in the native file system.
 /// * `app:` — A file located in the application installation directory.
@@ -34,11 +34,11 @@ pub struct File {
 }
 
 impl File {
-    /// Creates a file with a specified native path or URI.
-    /// `path_or_uri` is treated as an URI if it starts with either
+    /// Creates a file with a specified native path or URL.
+    /// `path_or_uri` is treated as an URL if it starts with either
     /// `file:`, `app:` or `app-storage:`.
     /// 
-    /// If this constructor is given a non URI, it is taken as a
+    /// If this constructor is given a non URL, it is taken as a
     /// `file:` native path. If that native path is not absolute,
     /// this native path is reassigned as the current working directory
     /// resolved to that native path.
@@ -139,13 +139,13 @@ impl File {
         })
     }
 
-    /// Returns the native path of the file, if it has the scheme `file:`.
+    /// The native path of the `File` object, if it has the scheme `file:`.
     pub fn native_path(&self) -> Option<String> {
         if self.scheme == FileScheme::File { Some(self.path.clone()) } else { None }
     }
 
-    /// Returns the URI of the file.
-    pub fn uri(&self) -> String {
+    /// The URL representing the file path.
+    pub fn url(&self) -> String {
         match self.scheme {
             FileScheme::File => {
                 native_path_to_uri(&self.path)
@@ -1073,6 +1073,82 @@ impl TryFrom<FileSystemReference> for FileReference {
 ///
 #[derive(Clone)]
 pub struct DirectoryReference(reference::DirectoryReference);
+
+impl DirectoryReference {
+    /// The name of a directory. This operation returns the last segment
+    /// of the full directory path, including any file extensions.
+    pub fn name(&self) -> String {
+        self.0.name()
+    }
+
+    /// Returns the entries of a directory.
+    pub async fn entries(&self) -> std::io::Result<Vec<FileSystemReference>> {
+        Ok(self.0.entries().await?.iter().map(|entry| FileSystemReference(entry.clone())).collect())
+    }
+
+    /// Attempts to get a directory entry.
+    /// `name` is taken as the entry filename.
+    /// 
+    /// # Errors
+    /// 
+    /// - Returns `Err` if the specified filename is invalid.
+    /// - Returns `Err` if the directory does not exist or is a file.
+    /// 
+    pub async fn get_directory(&self, name: &str) -> std::io::Result<DirectoryReference> {
+        Ok(DirectoryReference(self.0.get_directory(name).await?))
+    }
+
+    /// Attempts to get a directory entry or creates it if it does not exist.
+    /// `name` is taken as the entry filename.
+    /// 
+    /// # Errors
+    /// 
+    /// - Returns `Err` if the specified filename is invalid.
+    /// - Returns `Err` if a file of the specified filename already exists.
+    /// 
+    pub async fn get_directory_or_create(&self, name: &str) -> std::io::Result<DirectoryReference> {
+        Ok(DirectoryReference(self.0.get_directory_or_create(name).await?))
+    }
+
+    /// Attempts to get a file entry.
+    /// `name` is taken as the entry filename.
+    /// 
+    /// # Errors
+    /// 
+    /// - Returns `Err` if the specified filename is invalid.
+    /// - Returns `Err` if the file does not exist or is a directory.
+    /// 
+    pub async fn get_file(&self, name: &str) -> std::io::Result<FileReference> {
+        Ok(FileReference(self.0.get_file(name).await?))
+    }
+
+    /// Attempts to get a file entry or creates it if it does not exist.
+    /// `name` is taken as the entry filename.
+    /// 
+    /// # Errors
+    /// 
+    /// - Returns `Err` if the specified filename is invalid.
+    /// - Returns `Err` if a directory of the specified filename already exists.
+    /// 
+    pub async fn get_file_or_create(&self, name: &str) -> std::io::Result<FileReference> {
+        Ok(FileReference(self.0.get_file_or_create(name).await?))
+    }
+
+    /// Deletes an empty entry directory. `name` is taken as the entry filename.
+    pub async fn delete_empty_directory(&self, name: &str) -> std::io::Result<()> {
+        self.0.delete_empty_directory(name).await
+    }
+
+    /// Deletes a directory entry recursively. `name` is taken as the entry filename.
+    pub async fn delete_directory_all(&self, name: &str) -> std::io::Result<()> {
+        self.0.delete_directory_all(name).await
+    }
+
+    /// Deletes a file entry recursively. `name` is taken as the entry filename.
+    pub async fn delete_file(&self, name: &str) -> std::io::Result<()> {
+        self.0.delete_file(name).await
+    }
+}
 
 impl From<DirectoryReference> for FileSystemReference {
     fn from(value: DirectoryReference) -> Self {

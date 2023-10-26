@@ -44,6 +44,9 @@ extern "C" {
     #[wasm_bindgen(catch, method, js_name = size)]
     async fn size(this: &JSFileReference) -> Result<JsValue, JsValue>;
 
+    #[wasm_bindgen(method, js_name = toFileSystemReference)]
+    fn to_file_system_reference(this: &JSFileReference) -> JSFileSystemReference;
+
     #[derive(Clone)]
     type JSDirectoryReference;
 
@@ -70,10 +73,13 @@ extern "C" {
 
     #[wasm_bindgen(catch, method, js_name = deleteFile)]
     async fn delete_file(this: &JSDirectoryReference, name: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(method, js_name = toFileSystemReference)]
+    fn to_file_system_reference(this: &JSDirectoryReference) -> JSFileSystemReference;
 }
 
 #[derive(Clone)]
-pub struct FileSystemReference(pub JSFileSystemReference);
+pub struct FileSystemReference(JSFileSystemReference);
 
 impl FileSystemReference {
     pub fn name(&self) -> String {
@@ -90,7 +96,7 @@ impl FileSystemReference {
 }
 
 #[derive(Clone)]
-pub struct FileReference(pub JSFileReference);
+pub struct FileReference(JSFileReference);
 
 impl FileReference {
     pub async fn read_bytes(&self) -> io::Result<Bytes> {
@@ -122,8 +128,14 @@ impl FileReference {
     }
 }
 
+impl From<FileReference> for FileSystemReference {
+    fn from(value: FileReference) -> Self {
+        FileSystemReference(value.0.to_file_system_reference())
+    }
+}
+
 #[derive(Clone)]
-pub struct DirectoryReference(pub JSDirectoryReference);
+pub struct DirectoryReference(JSDirectoryReference);
 
 impl DirectoryReference {
     pub fn name(&self) -> String {
@@ -139,37 +151,43 @@ impl DirectoryReference {
         Ok(entries_2)
     }
 
-    pub async fn get_directory(&self, name: String) -> io::Result<DirectoryReference> {
-        let reference = self.0.get_directory(name, false).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
+    pub async fn get_directory(&self, name: &str) -> io::Result<DirectoryReference> {
+        let reference = self.0.get_directory(name.into(), false).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
         Ok(DirectoryReference(reference.try_into().unwrap()))
     }
 
-    pub async fn get_directory_or_create(&self, name: String) -> io::Result<DirectoryReference> {
-        let reference = self.0.get_directory(name, true).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
+    pub async fn get_directory_or_create(&self, name: &str) -> io::Result<DirectoryReference> {
+        let reference = self.0.get_directory(name.into(), true).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
         Ok(DirectoryReference(reference.try_into().unwrap()))
     }
 
-    pub async fn get_file(&self, name: String) -> io::Result<FileReference> {
-        let reference = self.0.get_file(name, false).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+    pub async fn get_file(&self, name: &str) -> io::Result<FileReference> {
+        let reference = self.0.get_file(name.into(), false).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
         Ok(FileReference(reference.try_into().unwrap()))
     }
 
-    pub async fn get_file_or_create(&self, name: String) -> io::Result<FileReference> {
-        let reference = self.0.get_file(name, true).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+    pub async fn get_file_or_create(&self, name: &str) -> io::Result<FileReference> {
+        let reference = self.0.get_file(name.into(), true).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
         Ok(FileReference(reference.try_into().unwrap()))
     }
 
-    pub async fn delete_empty_directory(&self, name: String) -> io::Result<()> {
-        self.0.delete_empty_directory(name).await.map(|_| ())
+    pub async fn delete_empty_directory(&self, name: &str) -> io::Result<()> {
+        self.0.delete_empty_directory(name.into()).await.map(|_| ())
             .map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
     }
 
-    pub async fn delete_directory_all(&self, name: String) -> io::Result<()> {
-        self.0.delete_directory_all(name).await.map(|_| ())
+    pub async fn delete_directory_all(&self, name: &str) -> io::Result<()> {
+        self.0.delete_directory_all(name.into()).await.map(|_| ())
             .map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
     }
 
-    pub async fn delete_file(&self, name: String) -> io::Result<()> {
-        self.0.delete_file(name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
+    pub async fn delete_file(&self, name: &str) -> io::Result<()> {
+        self.0.delete_file(name.into()).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
+    }
+}
+
+impl From<DirectoryReference> for FileSystemReference {
+    fn from(value: DirectoryReference) -> Self {
+        FileSystemReference(value.0.to_file_system_reference())
     }
 }

@@ -18,11 +18,11 @@ impl FileSystemReference {
     }
 
     pub fn as_directory(&self) -> Option<DirectoryReference> {
-        if self.1 == EntryKind::Directory { Some(DirectoryReference(self.0)) } else { None }
+        if self.1 == EntryKind::Directory { Some(DirectoryReference(self.0.clone())) } else { None }
     }
 
     pub fn as_file(&self) -> Option<FileReference> {
-        if self.1 == EntryKind::File { Some(FileReference(self.0)) } else { None }
+        if self.1 == EntryKind::File { Some(FileReference(self.0.clone())) } else { None }
     }
 }
 
@@ -56,6 +56,12 @@ impl FileReference {
     }
 }
 
+impl From<FileReference> for FileSystemReference {
+    fn from(value: FileReference) -> Self {
+        FileSystemReference(value.0.clone(), EntryKind::File)
+    }
+}
+
 #[derive(Clone)]
 pub struct DirectoryReference(pub PathBuf);
 
@@ -83,6 +89,108 @@ impl DirectoryReference {
         Ok(listing_2)
     }
 
-    pub async fn get_directory(&self, name: String) -> io::Result<DirectoryReference> {
+    pub async fn get_directory(&self, name: &str) -> io::Result<DirectoryReference> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        let path = self.0.join(name);
+        let metadata = tokio::fs::metadata(&path).await?;
+        if metadata.is_dir() {
+            Ok(DirectoryReference(path))
+        } else {
+            Err(io::Error::new(io::ErrorKind::NotADirectory, "Not a directory"))
+        }
     }
+
+    pub async fn get_directory_or_create(&self, name: &str) -> io::Result<DirectoryReference> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        let path = self.0.join(name);
+
+        let metadata = tokio::fs::metadata(&path).await;
+        if let Err(error) = metadata {
+            if error.kind() == io::ErrorKind::NotFound {
+                tokio::fs::create_dir(&path).await?;
+                return Ok(DirectoryReference(path));
+            }
+            return Err(error);
+        }
+        let metadata = metadata.unwrap();
+
+        if metadata.is_dir() {
+            Ok(DirectoryReference(path))
+        } else {
+            Err(io::Error::new(io::ErrorKind::NotADirectory, "Not a directory"))
+        }
+    }
+
+    pub async fn get_file(&self, name: &str) -> io::Result<FileReference> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        let path = self.0.join(name);
+        let metadata = tokio::fs::metadata(&path).await?;
+        if metadata.is_file() {
+            Ok(FileReference(path))
+        } else {
+            Err(io::Error::new(io::ErrorKind::IsADirectory, "Entry is a directory"))
+        }
+    }
+
+    pub async fn get_file_or_create(&self, name: &str) -> io::Result<FileReference> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        let path = self.0.join(name);
+
+        let metadata = tokio::fs::metadata(&path).await;
+        if let Err(error) = metadata {
+            if error.kind() == io::ErrorKind::NotFound {
+                tokio::fs::write(&path, vec![]).await?;
+                return Ok(FileReference(path));
+            }
+            return Err(error);
+        }
+        let metadata = metadata.unwrap();
+
+        if metadata.is_file() {
+            Ok(FileReference(path))
+        } else {
+            Err(io::Error::new(io::ErrorKind::IsADirectory, "Entry is a directory"))
+        }
+    }
+
+    pub async fn delete_empty_directory(&self, name: &str) -> io::Result<()> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        tokio::fs::remove_dir(self.0.join(name)).await
+    }
+
+    pub async fn delete_directory_all(&self, name: &str) -> io::Result<()> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        tokio::fs::remove_dir_all(self.0.join(name)).await
+    }
+
+    pub async fn delete_file(&self, name: &str) -> io::Result<()> {
+        if !is_valid_name(name) {
+            return Err(io::Error::new(io::ErrorKind::InvalidFilename, "Invalid filename"));
+        }
+        tokio::fs::remove_file(self.0.join(name)).await
+    }
+}
+
+impl From<DirectoryReference> for FileSystemReference {
+    fn from(value: DirectoryReference) -> Self {
+        FileSystemReference(value.0.clone(), EntryKind::Directory)
+    }
+}
+
+fn is_valid_name(name: &str) -> bool {
+    let path = std::path::PathBuf::from(name);
+    let name_2 = path.file_name();
+    if let Some(name_2) = name_2 { name == name_2 } else { false }
 }

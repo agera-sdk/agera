@@ -30,6 +30,10 @@ export class JSFileReference {
         this.handle = handle;
     }
 
+    toFileSystemReference() {
+        return new JSFileSystemReference(this.handle);
+    }
+
     /**
      * @returns {string}
      */
@@ -92,6 +96,10 @@ export class JSDirectoryReference {
      */
     constructor(handle) {
         this.handle = handle;
+    }
+
+    toFileSystemReference() {
+        return new JSFileSystemReference(this.handle);
     }
 
     /**

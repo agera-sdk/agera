@@ -18,13 +18,9 @@
 File API.
 
 - [x] Access to various directories, including user directories
-- [ ] File streaming read and write (not a priority for now)
-
-Support `FileReference` and `DirectoryReference`, alternatives to `File` that comply with the Web File System API, providing only asynchronous operations, used by file pickers more generally.
-
-- [ ] `FileReference`
-- [ ] `DirectoryReference`
-- [ ] File picker functions
+- [x] File references
+- [ ] "Open/Save As" resulting into file references
+- [ ] File streaming read and write (not necessary for most applications)
 
 Should be properly played with:
 
