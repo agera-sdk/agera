@@ -112,7 +112,7 @@ pub async fn size_async(path: String) -> io::Result<usize> {
     Ok(unsafe { size.as_f64().unwrap().to_int_unchecked() })
 }
 
-fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {
+pub(crate) fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {
     let error = error.as_f64().unwrap();
     if error == 0.0 {
         io::Error::new(io::ErrorKind::NotFound, "File or directory not found")
@@ -133,7 +133,7 @@ fn js_io_error_to_rs_io_error(error: JsValue, is_directory: bool) -> io::Error {
     }
 }
 
-fn js_io_error_to_rs_io_error_for_delete_directory(js_error: JsValue) -> io::Error {
+pub(crate) fn js_io_error_to_rs_io_error_for_delete_directory(js_error: JsValue) -> io::Error {
     let error = js_error.as_f64().unwrap();
     if error == 6.0 {
         io::Error::new(io::ErrorKind::DirectoryNotEmpty, "Directory not empty")

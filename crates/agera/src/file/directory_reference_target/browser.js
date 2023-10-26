@@ -1,3 +1,12 @@
+export class JSDirectoryReference {
+    /**
+     * @param {FileSystemDirectoryHandle} handle 
+     */
+    constructor(handle) {
+        this.handle = handle;
+    }
+}
+
 const errorConstants = {
     "NotFoundError": 0,
     "TypeMismatchError": 1,

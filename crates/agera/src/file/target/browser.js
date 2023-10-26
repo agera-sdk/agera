@@ -1,14 +1,3 @@
-const errorConstants = {
-    "NotFoundError": 0,
-    "TypeMismatchError": 1,
-    "NotAllowedError": 2,
-    // Error thrown when a segment contains invalid characters.
-    "TypeError": 3,
-    "InvalidStateError": 4,
-    "NoModificationAllowedError": 5,
-    "InvalidModificationError": 6,
-};
-
 export async function existsAsync(path) {
     try {
         await getFileHandleAsync(path);
@@ -67,11 +56,8 @@ export async function createDirectoryAllAsync(path) {
 export async function readBytesAsync(path) {
     const handle1 = await getFileHandleAsync(path);
     try {
-        const handle2 = await handle1.getSyncAccessHandle();
-        const data = new Uint8Array(handle2.getSize());
-        handle2.read(data);
-        handle2.close();
-        return data;
+        const file = await handle1.getFile();
+        return new Uint8Array(await file.arrayBuffer());
     } catch (error) {
         throw transformError(error);
     }
@@ -81,11 +67,15 @@ export async function directoryListingAsync(path) {
     const handle = await getDirectoryHandleAsync(path);
     const listing = [];
     try {
-        for await (const key of handle.keys()) {
-            listing.push(key);
+        for (const key of handle.keys()) {
+            try {
+                listing.push(await key);
+            } catch (error) {
+                // Ignore error
+            }
         }
     } catch (error) {
-        return transformError(error);
+        throw transformError(error);
     }
     return listing;
 }
@@ -121,11 +111,10 @@ export async function deleteFileAsync(parentPath, name) {
 }
 
 export async function writeAsync(path, data) {
-    const handle = await getFileHandleAsync(path);
+    const handle = await getFileHandleAsync(path, true);
     try {
-        const handle2 = await handle.getSyncAccessHandle();
+        const handle2 = await handle.createWritable();
         handle2.write(data);
-        handle2.close();
     } catch (error) {
         throw transformError(error);
     }
@@ -143,8 +132,7 @@ export async function modificationEpochMillisecondsAsync(path) {
     const handle = await getFileHandleAsync(path);
     try {
         const file = await handle.getFile();
-        const lastModified = file.lastModified;
-        return lastModified;
+        return file.lastModified;
     } catch (error) {
         throw transformError(error);
     }
@@ -153,10 +141,8 @@ export async function modificationEpochMillisecondsAsync(path) {
 export async function sizeAsync(path) {
     const handle1 = await getFileHandleAsync(path);
     try {
-        const handle2 = await handle1.createSyncAccessHandle()();
-        const size = handle2.getSize();
-        handle2.close();
-        return size;
+        const file = await handle1.getFile();
+        return file.size;
     } catch (error) {
         throw transformError(error);
     }
@@ -165,7 +151,7 @@ export async function sizeAsync(path) {
 /**
  * @throws {number} An error constant.
  */
-async function getFileHandleAsync(path) {
+async function getFileHandleAsync(path, create = false) {
     try {
         let dirHandle = await navigator.storage.getDirectory();
         const dirSegments = path.split('/');
@@ -184,7 +170,7 @@ async function getFileHandleAsync(path) {
                 }
             }
         }
-        return await dirHandle.getFileHandle(fileSegment);
+        return await dirHandle.getFileHandle(fileSegment, { create });
     } catch (e) {
         throw transformError(e);
     }
@@ -208,6 +194,17 @@ async function getDirectoryHandleAsync(path, create = false) {
         throw transformError(e);
     }
 }
+
+const errorConstants = {
+    "NotFoundError": 0,
+    "TypeMismatchError": 1,
+    "NotAllowedError": 2,
+    // Error thrown when a segment contains invalid characters.
+    "TypeError": 3,
+    "InvalidStateError": 4,
+    "NoModificationAllowedError": 5,
+    "InvalidModificationError": 6,
+};
 
 function transformError(error) {
     if (typeof error === "number") {

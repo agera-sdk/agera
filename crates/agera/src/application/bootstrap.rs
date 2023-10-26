@@ -1,4 +1,4 @@
-/// Starts the Agera application, executing an initial
+/// Starts the Agera application, executing an initial asynchronous
 /// action. This performs bootstrapping of the application.
 /// 
 /// Defining a main Rust function instead of using `agera::application::start`
