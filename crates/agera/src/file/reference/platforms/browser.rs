@@ -54,15 +54,22 @@ extern "C" {
     fn name(this: &JSDirectoryReference) -> String;
 
     #[wasm_bindgen(catch, method, js_name = entries)]
-    fn entries(this: &JSDirectoryReference) -> Result<JsValue, JsValue>;
+    async fn entries(this: &JSDirectoryReference) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(catch, method, js_name = getDirectory)]
-    fn get_directory(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
+    async fn get_directory(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
 
     #[wasm_bindgen(catch, method, js_name = getFile)]
-    fn get_file(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
+    async fn get_file(this: &JSDirectoryReference, name: String, create: bool) -> Result<JsValue, JsValue>;
 
+    #[wasm_bindgen(catch, method, js_name = deleteEmptyDirectory)]
+    async fn delete_empty_directory(this: &JSDirectoryReference, name: String) -> Result<JsValue, JsValue>;
 
+    #[wasm_bindgen(catch, method, js_name = deleteDirectoryAll)]
+    async fn delete_directory_all(this: &JSDirectoryReference, name: String) -> Result<JsValue, JsValue>;
+
+    #[wasm_bindgen(catch, method, js_name = deleteFile)]
+    async fn delete_file(this: &JSDirectoryReference, name: String) -> Result<JsValue, JsValue>;
 }
 
 #[derive(Clone)]
@@ -112,5 +119,57 @@ impl FileReference {
     pub async fn size(&self) -> io::Result<usize> {
         let size = self.0.size().await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
         Ok(unsafe { size.as_f64().unwrap().to_int_unchecked() })
+    }
+}
+
+#[derive(Clone)]
+pub struct DirectoryReference(pub JSDirectoryReference);
+
+impl DirectoryReference {
+    pub fn name(&self) -> String {
+        self.0.name()
+    }
+
+    pub async fn entries(&self) -> io::Result<Vec<FileSystemReference>> {
+        let entries = self.0.entries().await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
+        let mut entries_2 = vec![];
+        for entry in js_sys::Array::try_from(entries).unwrap() {
+            entries_2.push(FileSystemReference(entry.try_into().unwrap()));
+        }
+        Ok(entries_2)
+    }
+
+    pub async fn get_directory(&self, name: String) -> io::Result<DirectoryReference> {
+        let reference = self.0.get_directory(name, false).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
+        Ok(DirectoryReference(reference.try_into().unwrap()))
+    }
+
+    pub async fn get_directory_or_create(&self, name: String) -> io::Result<DirectoryReference> {
+        let reference = self.0.get_directory(name, true).await.map_err(|error| js_io_error_to_rs_io_error(error, true))?;
+        Ok(DirectoryReference(reference.try_into().unwrap()))
+    }
+
+    pub async fn get_file(&self, name: String) -> io::Result<FileReference> {
+        let reference = self.0.get_file(name, false).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+        Ok(FileReference(reference.try_into().unwrap()))
+    }
+
+    pub async fn get_file_or_create(&self, name: String) -> io::Result<FileReference> {
+        let reference = self.0.get_file(name, true).await.map_err(|error| js_io_error_to_rs_io_error(error, false))?;
+        Ok(FileReference(reference.try_into().unwrap()))
+    }
+
+    pub async fn delete_empty_directory(&self, name: String) -> io::Result<()> {
+        self.0.delete_empty_directory(name).await.map(|_| ())
+            .map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
+    }
+
+    pub async fn delete_directory_all(&self, name: String) -> io::Result<()> {
+        self.0.delete_directory_all(name).await.map(|_| ())
+            .map_err(|error| js_io_error_to_rs_io_error_for_delete_directory(error))
+    }
+
+    pub async fn delete_file(&self, name: String) -> io::Result<()> {
+        self.0.delete_file(name).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
     }
 }

@@ -102,7 +102,7 @@ export class JSDirectoryReference {
     }
 
     /**
-     * @returns {Promise<[string, JSFileSystemReference]>}
+     * @returns {Promise<JSFileSystemReference>}
      */
     async entries() {
         const results = [];
