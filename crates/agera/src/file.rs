@@ -493,7 +493,7 @@ impl File {
         }}
     }
 
-    /// Reads an UTF-8 string from a file synchronously.
+    /// Reads an UTF-8 encoded string from a file synchronously.
     /// 
     /// # Browser support
     ///
@@ -509,7 +509,7 @@ impl File {
         }}
     }
 
-    /// Reads an UTF-8 string from a file asynchronously.
+    /// Reads an UTF-8 encoded string from a file asynchronously.
     pub async fn read_utf8_async(&self) -> std::io::Result<String> {
         if_native_target! {{
             tokio::fs::read_to_string(&self.path_omega()).await
@@ -803,7 +803,7 @@ impl File {
         }}
     }
 
-    /// The size of a file. This method returns synchronously.
+    /// The size of a file, in bytes. This method returns synchronously.
     /// 
     /// # Browser support
     ///
@@ -819,7 +819,8 @@ impl File {
         }}
     }
 
-    /// The size of a file. This method returns asynchronously.
+    /// The size of a file, in bytes. This method returns asynchronously.
+    /// 
     pub async fn size_async(&self) -> std::io::Result<usize> {
         if_native_target! {{
             tokio::fs::metadata(&self.path_omega()).await.map(|metadata| metadata.len() as usize)
@@ -988,8 +989,39 @@ cfg_if! {
 /// designed to be compatible with the browser.
 ///
 #[derive(Clone)]
-pub struct FileReference {
-    inner: file_reference_target::FileReference,
+pub struct FileReference(file_reference_target::FileReference);
+
+impl FileReference {
+    /// Reads bytes from a file.
+    pub async fn read_bytes(&self) -> std::io::Result<Bytes> {
+        self.0.read_bytes().await
+    }
+
+    /// Reads an UTF-8 encoded string from a file.
+    pub async fn read_utf8(&self) -> std::io::Result<String> {
+        self.0.read_utf8().await
+    }
+
+    /// Writes data to a file.
+    pub async fn write<T: AsRef<[u8]>>(&self, data: T) -> std::io::Result<()> {
+        self.0.write(data.as_ref()).await
+    }
+
+    /// The modification date from a file.
+    pub async fn modification_date(&self) -> std::io::Result<std::time::SystemTime> {
+        self.0.modification_date().await
+    }
+
+    /// The name of a file. This operation returns the last segment
+    /// of the full file path, including any file extensions.
+    pub async fn name(&self) -> std::io::Result<String> {
+        self.0.name().await
+    }
+
+    /// The size of a file, in bytes.
+    pub async fn size(&self) -> std::io::Result<usize> {
+        self.0.size().await
+    }
 }
 
 /// `DirectoryReference` represents a reference to a directory.

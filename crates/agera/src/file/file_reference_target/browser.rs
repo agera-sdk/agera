@@ -46,6 +46,10 @@ impl FileReference {
         self.0.read_bytes().await.map(|ba| Bytes::from(js_sys::Uint8Array::try_from(ba).unwrap().to_vec())).map_err(|error| js_io_error_to_rs_io_error(error, false))
     }
 
+    pub async fn read_utf8(&self) -> io::Result<String> {
+        Ok(String::from_utf8_lossy(&self.read_bytes().await?).into_owned())
+    }
+
     pub async fn write(&self, data: &[u8]) -> io::Result<()> {
         let uint8array = js_sys::Uint8Array::from(data);
         self.0.write(uint8array.buffer().into()).await.map(|_| ()).map_err(|error| js_io_error_to_rs_io_error(error, false))
