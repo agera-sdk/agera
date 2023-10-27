@@ -37,14 +37,14 @@ use agera::display::*;
 
 // `DisplayObject` is an entity with additional methods
 let object: DisplayObject = DisplayObject::new();
-object.has::<TComponent>();
+object.has::<SomeComponent>();
 object.set_alpha(0);
 object.add_child(&child);
 
 let entity: Entity = object.into();;
 
 // Entity back into a DisplayObject
-let object = DisplayObject::try_from(entity.as_entity());
+let object = DisplayObject::try_from(&entity);
 ```
 
 Types for display objects are built by implementing `DisplayObjectDelegate`, thus inheriting necessary methods to quickly work with display objects.

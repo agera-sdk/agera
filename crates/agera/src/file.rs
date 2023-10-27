@@ -146,7 +146,7 @@ impl File {
 
     /// The native path of the `File` object, if it has the scheme `file:`.
     pub fn native_path(&self) -> Option<String> {
-        if self.scheme == FileScheme::File { Some(self.path.clone()) } else { None }
+        if self.scheme == FileScheme::File { Some(self.flex_path().to_string_with_flex_separator()) } else { None }
     }
 
     /// The URL representing the file path.
