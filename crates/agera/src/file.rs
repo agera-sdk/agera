@@ -959,7 +959,7 @@ fn application_directory() -> String {
         }
     }}
     if_browser! {{
-        "/installFiles".into()
+        format!("/{}/installFiles", crate::application::id())
     }}
 }
 
@@ -979,7 +979,7 @@ fn application_storage_directory() -> String {
         }
     }}
     if_browser! {{
-        "/storageFiles".into()
+        format!("/{}/storageFiles", crate::application::id())
     }}
 }
 
