@@ -30,11 +30,7 @@ Rendering a display object takes parent inherited fields such as alpha and retur
 
 ## Controls
 
-* [ ] AgeraControlDelegate for types that are controls
-  - [ ] Implement `AsRef<AgeraControl>`
-  - [ ] Implement `AsRef<DisplayObject>`
-  - [ ] Implement `AsRef<Entity>`
-  - [ ] Implement `Deref<DisplayObject>`
+* [ ] ?
 
 ## Shape
 
@@ -82,3 +78,4 @@ shape.clear()
 
 ## Bitmap
 
+* [ ] ?
