@@ -14,9 +14,13 @@
 pub macro start {
     ($start_action:expr) => {
         async fn __boostrap() {
+            if unsafe { ::agera::application::__agera_BOOTSTRAPPED } {
+                panic!("'agera::application::start' must not be invoked more than once");
+            }
+
             // Bootstrap
             include!(concat!(env!("OUT_DIR"), "/agera_sdk_build/bootstrap.rs")).await;
-            
+
             // Setup file directories
             ::agera::file::__agera_File_bootstrap().await;
 

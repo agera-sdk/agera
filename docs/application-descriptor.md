@@ -12,6 +12,29 @@ The application descriptor is the file `agera-application.json` at the project's
 }
 ```
 
+## `frameRate`
+
+**Syntax**
+
+```json
+{
+    "frameRate": 60
+}
+```
+
+## `initialWindow`
+
+**Syntax**
+
+```json
+{
+    "initialWindow": {
+        "width": 750,
+        "height": 750
+    }
+}
+```
+
 ## Installation files
 
 Installation files can be added to the descriptor using glob patterns, specifying paths to include and exclude.

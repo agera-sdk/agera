@@ -57,12 +57,15 @@ listener.remove();
 
 #![feature(decl_macro)]
 #![feature(io_error_more)]
+#![feature(structural_match)]
 
 pub mod application;
 pub mod common;
+pub mod display;
 pub mod entity;
 pub mod events;
 pub mod file;
+pub mod geom;
 pub mod platforms;
 pub mod timer;
 pub mod util;

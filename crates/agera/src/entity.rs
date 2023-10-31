@@ -47,13 +47,17 @@ use crate::common::*;
 use std::{
     any::Any,
     sync::{Arc, RwLock, Weak},
-    hash::Hash, fmt::Debug,
+    hash::Hash, fmt::{Debug, Display}, error::Error,
 };
 
 type Component = Arc<dyn Any + Send + Sync>;
 
-/// Represents an entity in the entity-component-system as a
-/// reference-counted type.
+#[doc(hidden)]
+pub use agera_sdk_proc::entity_inherits;
+
+pub use agera_sdk_proc::entity_type;
+
+/// Represents an entity as a type managed by reference-counting.
 pub struct Entity {
     inner: Arc<EntityInner>,
 }
@@ -86,6 +90,12 @@ impl Clone for Entity {
     /// > **Note**: This method does not clone the entity by content.
     fn clone(&self) -> Self {
         Self { inner: Arc::clone(&self.inner) }
+    }
+}
+
+impl AsRef<Entity> for Entity {
+    fn as_ref(&self) -> &Entity {
+        self
     }
 }
 
@@ -125,7 +135,7 @@ impl Entity {
         None
     }
 
-    /// Overrides a component of the entity.
+    /// Overrides a component of the entity. This method is chainable.
     pub fn set<T>(&self, value: T) -> Self
         where T: Any + Send + Sync
     {
@@ -179,7 +189,8 @@ impl Entity {
     /// Adds a child entity to the end of the children collection.
     /// If `child` is already child of an entity, it is removed and then added
     /// as part of this entity.
-    pub fn add_child(&self, child: &Entity) {
+    pub fn add_child(&self, child: impl AsRef<Entity>) {
+        let child = child.as_ref();
         child.remove_from_parent();
         *child.inner.parent.write().unwrap() = self.downgrade_ref();
         self.inner.children.write().unwrap().push(child.clone());
@@ -192,7 +203,8 @@ impl Entity {
     /// # Panics
     /// 
     /// This method panics if `index` is out of bounds.
-    pub fn add_child_at(&self, index: usize, child: &Entity) {
+    pub fn add_child_at(&self, index: usize, child: impl AsRef<Entity>) {
+        let child = child.as_ref();
         child.remove_from_parent();
         assert!(index < self.num_children(), "Specified index is out of bounds.");
         *child.inner.parent.write().unwrap() = self.downgrade_ref();
@@ -204,7 +216,9 @@ impl Entity {
     /// # Panics
     /// 
     /// Panics if any of the specified entities is not part of the entity.
-    pub fn swap_children(&self, child_1: &Entity, child_2: &Entity) {
+    pub fn swap_children(&self, child_1: impl AsRef<Entity>, child_2: impl AsRef<Entity>) {
+        let child_1 = child_1.as_ref();
+        let child_2 = child_2.as_ref();
         let indices = [self.inner.children.read().unwrap().index_of(child_1), self.inner.children.read().unwrap().index_of(child_2)];
         assert!(indices.iter().all(|i| i.is_some()), "Some of the specified indices are out of bounds.");
         self.inner.children.write().unwrap().swap(indices[0].unwrap(), indices[1].unwrap());
@@ -221,7 +235,8 @@ impl Entity {
     }
 
     /// Removes a child. Returns `true` if the child has been removed, or `false` otherwise.
-    pub fn remove_child(&self, child: &Entity) -> bool {
+    pub fn remove_child(&self, child: impl AsRef<Entity>) -> bool {
+        let child = child.as_ref();
         let i = self.inner.children.read().unwrap().index_of(child);
         if let Some(i) = i {
             self.inner.children.write().unwrap().remove(i);
@@ -294,6 +309,16 @@ impl Entity {
         }
         r
     }
+
+    /// Indicates whether an Entity is of a certain Entity subtype.
+    pub fn is<T: TryFrom<Self, Error = EntityTypeError>>(&self) -> bool {
+        T::try_from(self.clone()).is_ok()
+    }
+
+    /// Attempts to convert this Entity reference into a `T` reference.
+    pub fn to<T: TryFrom<Self, Error = EntityTypeError>>(&self) -> Result<T, EntityTypeError> {
+        T::try_from(self.clone())
+    }
 }
 
 struct EntityInner {
@@ -346,6 +371,32 @@ impl Clone for WeakEntityRef {
     }
 }
 
+/// Represents an error originated from Entity subtype relationships.
+/// For example, this error might occur as result of a failed conversion.
+pub struct EntityTypeError {
+    message: String,
+}
+
+impl EntityTypeError {
+    pub fn new(message: &str) -> Self {
+        Self { message: message.into() }
+    }
+}
+
+impl Display for EntityTypeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl Debug for EntityTypeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        <Self as Display>::fmt(self, f)
+    }
+}
+
+impl Error for EntityTypeError {}
+
 #[cfg(test)]
 mod tests {
     use crate::entity::*;
@@ -368,5 +419,71 @@ mod tests {
         topmost.add_child(&child_1);
         assert_eq!("child1".to_owned(), topmost.resolve_path(".last").unwrap().name().unwrap());
         assert_eq!(topmost.resolve_path(".last").unwrap(), child_1);
+    }
+
+    #[test]
+    fn test_entity_subtypes_1() {
+        struct A(Entity);
+
+        entity_inherits!(A < Entity, use AComponent, crate);
+        
+        impl A {
+            fn new() -> Self {
+                Self(Entity::new().set(AComponent))
+            }
+        }
+
+        struct AComponent;
+
+        struct B(A);
+
+        entity_inherits!(B < A < Entity, use BComponent, crate);
+
+        impl B {
+            fn new() -> Self {
+                Self(A::new().set(BComponent).try_into().unwrap())
+            }
+        }
+
+        struct BComponent;
+
+        let r = B::new();
+        let r_e: Entity = r.clone().into();
+        let _: A = r.into();
+        assert!(r_e.is::<B>());
+
+        let r = Entity::new();
+        assert!(!r.is::<A>());
+    }
+
+    #[test]
+    fn test_entity_subtypes_2() {
+        entity_type! {
+            use agera = crate;
+            struct A: Entity {
+                x: f64 = 0.0,
+            }
+            fn constructor(x: f64) {
+                super();
+                this.set_x(x);
+            }
+        }
+
+        let o = A::new(10.0);
+        assert_eq!(o.x(), 10.0);
+
+        entity_type! {
+            use agera = crate;
+            struct B: A < Entity {
+                y: A = A::new(15.0),
+                ref z: f64 = 0.0,
+            }
+            fn constructor() {
+                super(0.0);
+            }
+        }
+
+        let o = B::new();
+        assert_eq!(o.y().x(), 15.0);
     }
 }

@@ -36,7 +36,7 @@ How you work with display objects:
 use agera::display::*;
 
 // `DisplayObject` is an entity with additional methods
-let object: DisplayObject = DisplayObject::new();
+let object = DisplayObject::new();
 object.has::<SomeComponent>();
 object.set_alpha(0);
 object.add_child(&child);
@@ -47,27 +47,6 @@ let entity: Entity = object.into();;
 let object = DisplayObject::try_from(&entity);
 ```
 
-Types for display objects are built by implementing `DisplayObjectDelegate`, thus inheriting necessary methods to quickly work with display objects.
+## agera::controls
 
-```rust
-use agera::common::*;
-use agera::display::*;
-
-struct CustomDisplayObject(Entity);
-
-impl CustomDisplayObject {
-    fn new() {
-        Self(DisplayObject::new().into())
-    }
-}
-
-impl DisplayObjectDelegate for CustomDisplayObject {
-    fn delegate(&self) -> Entity {
-        self.0
-    }
-}
-```
-
-## agera::ui
-
-Agera controls, `AgeraControl`, similiarly to display objects, use a delegate trait, `AgeraControlDelegate`. Agera controls are display objects under the hood.
+User interface controls.

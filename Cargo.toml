@@ -4,4 +4,5 @@ members = [
     "crates/agera",
     "crates/agera_sdk_application_descriptor",
     "crates/agera_sdk_build",
+    "crates/agera_sdk_proc",
 ]

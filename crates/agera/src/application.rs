@@ -1,11 +1,19 @@
+use std::sync::Arc;
 use crate::common::*;
 use crate::entity::*;
 
-static mut ROOT: Lazy<Entity> = Lazy::new(|| Entity::new());
+static mut WINDOW: Lazy<Arc<Window>> = Lazy::new(|| Arc::new(Window {
+    root: Entity::new(),
+}));
 
-/// The entity-component-system root entity.
+/// The main window of the application.
+pub fn window() -> Arc<Window> {
+    unsafe { Arc::clone(&WINDOW) }
+}
+
+/// The root entity of the application's main window.
 pub fn root() -> Entity {
-    unsafe { ROOT.clone() }
+    unsafe { WINDOW.root() }
 }
 
 /// *Internal property.*
@@ -19,5 +27,16 @@ pub fn id() -> String {
     unsafe { __agera_ID.unwrap().to_owned() }
 }
 
+pub const fn is_browser_application() -> bool {
+    cfg_if! { if #[cfg(target_arch = "wasm32")] { true } else { false } }
+}
+
+pub const fn is_native_application() -> bool {
+    cfg_if! { if #[cfg(target_arch = "wasm32")] { false } else { true } }
+}
+
 mod bootstrap;
 pub use bootstrap::*;
+
+mod window;
+pub use window::*;
