@@ -1,4 +1,4 @@
-use crate::{entity::*, geom::*};
+use crate::{display::*, entity::*, geom::*};
 
 entity_type! {
     use agera = crate;
@@ -7,5 +7,6 @@ entity_type! {
         pub alpha: f64 = 1.0,
         pub position: Vector2d = Vector2d::zero(),
         pub skew: Vector2d = Vector2d::zero(),
+        pub filters: Vec<BitmapFilter> = vec![],
     }
 }
