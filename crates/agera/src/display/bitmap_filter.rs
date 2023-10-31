@@ -24,6 +24,13 @@ pub enum BitmapFilter {
         /// may be enough for most applications.
         quality: u32,
     },
+    /// A drop shadow filter.
+    DropShadow {
+        color: Color,
+        offset: Vector2d,
+        spread: u32,
+        blur: Vector2d,
+    },
 }
 
 impl BitmapFilter {
