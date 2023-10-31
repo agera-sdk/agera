@@ -1,9 +1,8 @@
 use std::sync::Arc;
-use crate::common::*;
-use crate::entity::*;
+use crate::{common::*, display::*};
 
 static mut WINDOW: Lazy<Arc<Window>> = Lazy::new(|| Arc::new(Window {
-    root: Entity::new(),
+    root: DisplayObject::new(),
 }));
 
 /// The main window of the application.
@@ -11,8 +10,8 @@ pub fn window() -> Arc<Window> {
     unsafe { Arc::clone(&WINDOW) }
 }
 
-/// The root entity of the application's main window.
-pub fn root() -> Entity {
+/// The root display object of the application's main window.
+pub fn root() -> DisplayObject {
     unsafe { WINDOW.root() }
 }
 
