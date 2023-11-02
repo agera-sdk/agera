@@ -32,6 +32,21 @@ Rendering a display object takes parent inherited fields such as alpha and retur
 
 * [ ] ?
 
+## Focusable
+
+* [ ] ?
+
+## TextField
+
+* [ ] `line_count`
+* [ ] Selection
+  * [ ] `selectable`
+  * [ ] `selection_begin_index`
+  * [ ] `selection_end_index`
+* [ ] Editable
+* [ ] `get_text_format(begin_index: usize, end_index: usize)`
+* [ ] `set_text_format(format, begin_index: usize, end_index: usize)`
+
 ## Shape
 
 `Shape` should support fill and stroke operations. Additionally, text filling should be supported.
@@ -42,7 +57,6 @@ let shape = Shape::new();
 shape.clear()
     .begin_fill("green".parse().unwrap())
     .draw(Rectangle(Vector2d(0.0, 0.0), Vector2d(100.0, 100.0)))
-    .draw(Text { text: "Text", position: Vector2d(0.0, 0.0), ..default() })
     .draw(Circle { radius: 10.0, position: Vector2d(0.0, 0.0) })
     .move_to(position)
     .end_fill();
@@ -55,7 +69,6 @@ shape.clear()
 * [ ] `shape.draw_graphics_data(graphics_data)` (takes a `Vec<GraphicsData>`)
 * [ ] `Draw<T>` trait with a `.draw()` method
   - [ ] `Draw<Rectangle>`
-  - [ ] `Draw<Text>`
   - [ ] `Draw<Circle>`
   - [ ] `Draw<Ellipse>`
 * [ ] Gradient line style (`shape.line_gradient_style(...)`)

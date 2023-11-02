@@ -1,4 +1,4 @@
-use crate::{display::*, entity::*, geom::*, text::*};
+use crate::{display::*, entity::*, geom::*};
 
 entity_type! {
     use agera = crate;

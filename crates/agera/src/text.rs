@@ -1,2 +1,2 @@
-mod text;
-pub use text::*;
+mod text_format;
+pub use text_format::*;

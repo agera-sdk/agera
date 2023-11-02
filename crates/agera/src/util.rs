@@ -19,9 +19,7 @@ pub mod future;
 pub mod uri;
 pub mod literals;
 
-/**
- * Returns the default value of a type.
- */
+/// Returns the default value of a type.
 pub fn default<T: Default>() -> T {
     T::default()
 }
