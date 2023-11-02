@@ -21,7 +21,6 @@ pub struct TextFormat {
     pub strikethrough: bool,
 
     pub underline: bool,
-    pub anchor_underline: bool,
 
     pub superscript: bool,
     pub subscript: bool,
@@ -47,7 +46,6 @@ impl Default for TextFormat {
             italic: false,
             strikethrough: false,
             underline: false,
-            anchor_underline: false,
             superscript: false,
             subscript: false,
             color: Color::new(1.0, 1.0, 1.0, 1.0),
