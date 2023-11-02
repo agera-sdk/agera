@@ -37,7 +37,7 @@ Rendering a display object takes parent inherited fields such as alpha and retur
 `Shape` should support fill and stroke operations. Additionally, text filling should be supported.
 
 ```rust
-use agera::{common::*, display::*, geom::*};
+use agera::{common::*, display::*, geom::*, text::*};
 let shape = Shape::new();
 shape.clear()
     .begin_fill("green".parse().unwrap())
@@ -71,7 +71,7 @@ shape.clear()
 * [ ] `shape.curve_to(control_position, anchor_position)`
 * [ ] `GraphicsData`
   - An enumeration consisting of command variants resulting from line style, fill style and path calls in `Shape`.
-* [ ] `GraphicsData::from_svg(string)`
+* [ ] `GraphicsData::from_svg_contents(xml_string)`
   - Returns `Result<Vec<GraphicsData>, SvgParseError>`
 - [ ] `Gradient`
   - Enumeration consisting of `Linear` and `Radial` variants, with common methods that applies to both variants such as `colors()` and `ratios()`.

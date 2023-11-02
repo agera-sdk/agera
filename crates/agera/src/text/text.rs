@@ -2,7 +2,7 @@ use std::fmt::{Display, Debug};
 
 use crate::geom::Vector2d;
 
-/// Represents a text.
+/// Represents a text area of dynamic size.
 #[derive(Clone, PartialEq)]
 pub struct Text {
     pub position: Vector2d,
