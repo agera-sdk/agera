@@ -16,6 +16,7 @@ pub use ::chrono as temporal;
 pub use ::file_paths as paths;
 
 pub mod future;
+pub mod html;
 pub mod uri;
 pub mod literals;
 

@@ -41,7 +41,13 @@ pub use crate::util::regex::{
     Regex,
     Captures as RegexCaptures,
 };
-pub use crate::util::uri::*;
+pub use crate::util::{
+    uri::*,
+    html::{
+        escape_html,
+        unescape_html,
+    },
+};
 pub use crate::util::literals::{
     btreemap,
     btreeset,
