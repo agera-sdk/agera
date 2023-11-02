@@ -38,14 +38,20 @@ Rendering a display object takes parent inherited fields such as alpha and retur
 
 ## TextField
 
+* Crates in use
+  - https://crates.io/crates/htmlentity
+* [ ] `text`
+  * [ ] Getter
+  * [ ] Setter
+* [ ] `html`
+  * [ ] Getter
+  * [ ] Setter
 * [ ] `line_count`
 * [ ] Selection
   * [ ] `selectable`
   * [ ] `selection_begin_index`
   * [ ] `selection_end_index`
 * [ ] Editable
-* [ ] `get_text_format(begin_index: usize, end_index: usize)`
-* [ ] `set_text_format(format, begin_index: usize, end_index: usize)`
 
 ## Shape
 
