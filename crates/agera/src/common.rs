@@ -1,5 +1,5 @@
 /*!
-Commonly used items in general Rust programs.
+Common items in Rust programs.
 
 ```
 use agera::common::*;

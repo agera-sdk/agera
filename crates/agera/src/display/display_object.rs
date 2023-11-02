@@ -36,6 +36,7 @@ impl DisplayObject {
         self.clone()
     }
 
+    /*
     /// Position relative to the root display object.
     pub fn global_position(&self) -> Vector2d {
         if let Some(p) = self.parent() {
@@ -58,4 +59,5 @@ impl DisplayObject {
         self.set_position(value);
         self.clone()
     }
+    */
 }

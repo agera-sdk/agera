@@ -1,5 +1,5 @@
 /*!
-The hierarchical Entities used by Agera applications.
+Work with hierarchical Entities.
 
 An Entity consits of a set of components and an entity can have other
 children entities.

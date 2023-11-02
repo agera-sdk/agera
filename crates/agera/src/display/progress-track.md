@@ -37,14 +37,14 @@ Rendering a display object takes parent inherited fields such as alpha and retur
 `Shape` should support fill and stroke operations. Additionally, text filling should be supported.
 
 ```rust
-use agera::{display::*, geom::*};
+use agera::{common::*, display::*, geom::*};
 let shape = Shape::new();
 shape.clear()
     .begin_fill("green".parse().unwrap())
-    .draw(position, Rectangle(Vector2d(0.0, 0.0), Vector2d(100.0, 100.0)))
-    .draw(position, Text::new("Text").set_font_family("Verdana"))
+    .draw(Rectangle(Vector2d(0.0, 0.0), Vector2d(100.0, 100.0)))
+    .draw(Text { text: "Text", position: Vector2d(0.0, 0.0), ..default() })
+    .draw(Circle { radius: 10.0, position: Vector2d(0.0, 0.0) })
     .move_to(position)
-    .draw_arc(radius)
     .end_fill();
 ```
 
@@ -52,11 +52,11 @@ shape.clear()
   - [ ] Clear graphics commands
   - [ ] Clear fill and line style settings
 * [ ] `shape.draw_round_rect(position, rectangle, corner_radius)`
-* [ ] `shape.draw_circle(position, radius)`
 * [ ] `shape.draw_graphics_data(graphics_data)` (takes a `Vec<GraphicsData>`)
 * [ ] `Draw<T>` trait with a `.draw()` method
   - [ ] `Draw<Rectangle>`
   - [ ] `Draw<Text>`
+  - [ ] `Draw<Circle>`
   - [ ] `Draw<Ellipse>`
 * [ ] Gradient line style (`shape.line_gradient_style(...)`)
   - [ ] Linear

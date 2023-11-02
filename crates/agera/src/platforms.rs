@@ -1,5 +1,5 @@
 /*!
-Work with the target platform.
+Work with the final platform.
 
 # Native platforms
 

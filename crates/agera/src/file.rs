@@ -1,5 +1,5 @@
 /*!
-APIs for working with files.
+Work with the file system.
 */
 
 use crate::{common::*, platforms::{if_native_platform, if_browser}};

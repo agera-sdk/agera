@@ -67,5 +67,6 @@ pub mod events;
 pub mod file;
 pub mod geom;
 pub mod platforms;
+pub mod text;
 pub mod timer;
 pub mod util;

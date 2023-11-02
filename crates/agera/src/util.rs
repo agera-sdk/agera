@@ -1,8 +1,8 @@
 /*!
-Utilities for the Rust language.
+Miscellaneous utilities.
 
-Items in this module are in general re-exported from other crates.
-Most of `agera::util` is re-exported in `agera::common`, reducing
+Items in this module are in general re-exported from other crates
+in crates.io. Most of `agera::util` is re-exported in `agera::common`, reducing
 the need of importing them explicitly.
 */
 

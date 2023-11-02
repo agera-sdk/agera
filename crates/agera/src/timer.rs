@@ -1,5 +1,5 @@
 /*!
-Work with timing and tickers.
+Work with timing and ticking.
 */
 
 pub use std::time::Duration;
