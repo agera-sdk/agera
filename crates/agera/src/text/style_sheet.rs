@@ -1,7 +1,7 @@
 use crate::{common::*, util::Color};
 
 /// Text formatting rules for font size, color, and other styles.
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct StyleSheet {
     /// The host style. This is equivalent to the CSS `:host` selector.
     pub host: StyleSheetStyle,
@@ -34,9 +34,9 @@ impl Default for StyleSheet {
 }
 
 /// Style applicable to text fields.
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct StyleSheetStyle {
-    pub font_size: Option<f64>,
+    pub font_size: Option<StyleSheetUnits>,
     /// Font family. This field supports specifying fallback fonts by
     /// using the comma delimiter.
     /// This is equivalent to the CSS property `font-family`.
@@ -95,4 +95,9 @@ pub enum StyleSheetTextTransform {
     Capitalize,
     Lowercase,
     Uppercase,
+}
+
+#[derive(Copy, Clone)]
+pub enum StyleSheetUnits {
+    Pixels(f64),
 }
