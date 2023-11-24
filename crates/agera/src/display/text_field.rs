@@ -1,4 +1,4 @@
-use crate::{common::*, display::*, entity::*, geom::*, text::*, util::Color};
+use crate::{common::*, display::*, entity::*, geom::*, text::*};
 
 entity_type! {
     use agera = crate;
@@ -25,10 +25,13 @@ entity_type! {
     /// | `<li></li>`        | List item |
     /// | `<p></p>`          | Paragraph |
     /// | `<center></center>` | Centered content |
+    /// | `<hN></hN>`         | Heading title level *N*, where *N* is one based  |
+    /// | `<hr>`              | Horizontal ruler |
+    /// | `<br>`              | Break |
     /// 
     pub struct TextField: DisplayObject < Entity {
         pub size: Vector2d = Vector2d(100.0, 50.0),
-        pub style_sheet: StyleSheet = default(),
+        pub ref style_sheet: StyleSheetContainer = default(),
         pub horizontal_alignment: TextHorizontalAlignment = TextHorizontalAlignment::Left,
         pub vertical_alignment: TextVerticalAlignment = TextVerticalAlignment::Top,
         /// Horizontal scroll, in pixels.

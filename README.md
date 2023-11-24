@@ -39,6 +39,7 @@ Agera uses mainly hierarchical Entities, featuring:
     - [ ] Border and size configuration
     - [ ] Instantiating a window, which is faillible. It must always fail in web browsers.
 - [x] File APIs
+- [x] Timer APIs
 
 Other features may be unlisted.
 

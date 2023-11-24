@@ -57,7 +57,6 @@ pub use crate::util::literals::{
 
 pub use crate::util::{
     ByAddress,
-    ByThinAddress,
 
     Lazy,
     
