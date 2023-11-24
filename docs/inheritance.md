@@ -1,5 +1,11 @@
 # Inheritance
 
+Agera supports structure inheritance over the Rust language for use with the `Entity` type. 
+
+Differences from existing object-oriented programming inheritance in languages like Java:
+
+* Method overriding does not exist; subtype methods shadow super type's methods.
+
 To define an entity type, use `entity_type!`, specifying all of the inherited types correctly, in descending order, by using a less-than (`<`) delimited sequence.
 
 The following is an explanatory `DisplayObject` subtype:
@@ -42,13 +48,13 @@ entity_type! {
 }
 ```
 
-## Taking an Entity as parameter
+## Base type as parameter
 
-Receiving a specific Entity type can be done by taking a parameter of type `impl AsRef<T>`, where `T` is the entity type:
+Receiving a specific base Entity type can be done by taking a parameter of type `impl AsRef<T>`, where `T` is the entity type:
 
 ```rust
 fn f(entity: impl AsRef<Entity>) {
-    let entity = entity.as_ref();
+    let entity: Entity = entity.as_ref();
     // Action
 }
 ```
