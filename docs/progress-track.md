@@ -30,23 +30,6 @@ Should be properly played with:
 
 - Refer to https://wgpu.rs
 
-How you work with display objects:
-
-```rust
-use agera::display::*;
-
-// `DisplayObject` is an entity with additional methods
-let object = DisplayObject::new();
-object.has::<SomeComponent>();
-object.set_alpha(0);
-object.add_child(&child);
-
-let entity: Entity = object.into();;
-
-// Entity back into a DisplayObject
-let object = DisplayObject::try_from(&entity);
-```
-
 ## agera::controls
 
 User interface controls.

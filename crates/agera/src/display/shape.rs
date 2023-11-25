@@ -1,6 +1,5 @@
-use crate::{display::*, entity::*, geom::*};
+use crate::{display::*, geom::*, util::inheritance::*};
 
-entity_type! {
-    use agera = crate;
-    pub struct Shape: DisplayObject < Entity {}
+class! {
+    pub struct Shape: DisplayObject < Node {}
 }

@@ -1,8 +1,7 @@
-use crate::{display::*, entity::*, geom::*};
+use crate::{display::*, geom::*, util::inheritance::*};
 
-entity_type! {
-    use agera = crate;
-    pub struct DisplayObject: Entity {
+class! {
+    pub struct DisplayObject: Node {
         /// The opacity of a display object.
         pub alpha: f64 = 1.0,
         /// Position relative to the parent.

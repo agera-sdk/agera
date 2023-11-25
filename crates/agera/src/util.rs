@@ -8,6 +8,7 @@ pub use ::serde_json as json;
 pub use ::lazy_regex as regex;
 pub use ::chrono as temporal;
 pub use ::file_paths as paths;
+pub use ::oop_inheritance as inheritance;
 
 pub mod future;
 pub mod html;

@@ -10,10 +10,10 @@ an integrated development environment. Rust programs should include the followin
 use agera::common::*;
 ```
 
-# Entities
+# Nodes
 
-Agera uses a hierarchical Entity model, where multiple components are attached to an Entity,
-defined by the `agera::entity` module.
+Agera uses a Node graph using the [`util::inheritance`] module.
+You can define your own classes that extend other Node classes.
 
 # Graphical Experience
 
@@ -58,11 +58,11 @@ listener.remove();
 #![feature(decl_macro)]
 #![feature(io_error_more)]
 #![feature(structural_match)]
+#![feature(try_blocks)]
 
 pub mod application;
 pub mod common;
 pub mod display;
-pub mod entity;
 pub mod events;
 pub mod file;
 pub mod geom;

@@ -20,7 +20,7 @@ Develop rich internet applications robustly through Agera SDK, built in the Rust
 
 ## Progress
 
-Agera uses mainly hierarchical Entities, featuring:
+Agera applications use mainly a Node graph, featuring:
 
 - [ ] Graphical experience
   - [ ] Display objects

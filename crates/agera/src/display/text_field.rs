@@ -1,7 +1,6 @@
-use crate::{common::*, display::*, entity::*, geom::*, text::*};
+use crate::{common::*, display::*, geom::*, text::*, util::inheritance::*};
 
-entity_type! {
-    use agera = crate;
+class! {
     /// Represents a text field of fixed size.
     /// 
     /// # HTML support
@@ -29,7 +28,7 @@ entity_type! {
     /// | `<hr>`              | Horizontal ruler |
     /// | `<br>`              | Break |
     /// 
-    pub struct TextField: DisplayObject < Entity {
+    pub struct TextField: DisplayObject < Node {
         pub size: Vector2d = Vector2d(100.0, 50.0),
         pub ref style_sheet: StyleSheetContainer = default(),
         pub horizontal_alignment: TextHorizontalAlignment = TextHorizontalAlignment::Left,
