@@ -32,3 +32,5 @@ pub use self::vector_extensions::*;
 pub fn default<T: Default>() -> T {
     T::default()
 }
+
+pub use with_literal::with;

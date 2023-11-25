@@ -18,7 +18,7 @@ pub use crate::events::{
     EventListener,
 };
 
-pub use crate::util::default;
+pub use crate::util::{default, with};
 
 pub use crate::util::bytes::{
     Bytes,

@@ -19,19 +19,17 @@ impl Default for StyleSheetContainer {
     fn default() -> Self {
         Self {
             host: default(),
-            anchor: StyleSheet {
-                ..default()
-            },
-            anchor_hover: StyleSheet {
+            anchor: default(),
+            anchor_hover: with! {
                 text_decoration: Some(TextDecoration::Underline),
-                ..default()
+                ..
             },
-            selection: StyleSheet {
+            selection: with! {
                 background_color: Some(Color::new(0.0, 0.0, 0.0, 1.0)),
                 color: Some(Color::new(1.0, 1.0, 1.0, 1.0)),
-                ..default()
+                ..
             },
-            heading_title: HashMap::new(),
+            heading_title: hashmap! {},
         }
     }
 }
