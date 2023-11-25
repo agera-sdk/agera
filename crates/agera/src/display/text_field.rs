@@ -41,7 +41,7 @@ class! {
 
     pub fn constructor(text: String) {
         super();
-        this.set_text(text.clone());
+        // this.set_text(text.clone());
     }
 }
 
